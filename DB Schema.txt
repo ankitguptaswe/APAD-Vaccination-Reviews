@@ -1,0 +1,41 @@
+CREATE TABLE USER(
+   USER_ID        INT     PRIMARY KEY     NOT NULL,
+   NAME           TEXT    NOT NULL,
+   THEMES         TEXT    NOT NULL,
+   PICTURE        BLOB
+);
+
+CREATE TABLE LOCATION(
+   LOCATION_ID    INT     PRIMARY KEY     NOT NULL,
+   NAME           TEXT    NOT NULL,
+   TYPE           TEXT    NOT NULL,
+   ADDRESS        TEXT    NOT NULL
+);
+
+CREATE TABLE VACCINE(
+   VACCINE_ID     INT     PRIMARY KEY     NOT NULL,
+   NAME           TEXT    NOT NULL,
+   MANUFACTURER   TEXT    NOT NULL,
+   DOSE           INT     NOT NULL
+);
+
+CREATE TABLE REVIEWS(
+   REVIEW_ID      INT     PRIMARY KEY     NOT NULL,
+   USER_ID        INT                     NOT NULL,
+   LOCATION_ID    INT,
+   VACCINE_ID     INT,
+   PICTURE        BLOB                    NOT NULL,
+   DESCRIPTION    TEXT                    NOT NULL
+);
+
+INSERT INTO USER (USER_ID,NAME,THEMES)
+VALUES (1, 'Asad Aali', 'Vaccine');
+
+INSERT INTO USER (USER_ID,NAME,THEMES)
+VALUES (2, 'Ankit Gupta', 'All');
+
+INSERT INTO LOCATION (LOCATION_ID,NAME,TYPE,ADDRESS)
+VALUES (1, 'CVS Pharmacy', 'Pharmacy', 'Austin, TX');
+
+INSERT INTO VACCINE (VACCINE_ID,NAME,MANUFACTURER,DOSE)
+VALUES (1, 'Pfizer BioNTech', 'BioNTech', 2);
