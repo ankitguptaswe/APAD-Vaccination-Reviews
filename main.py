@@ -28,7 +28,7 @@ def reviews(user_id):
         filename = secrets.token_hex(16)
         file_extension = os.path.splitext(file.filename)[1]
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename + file_extension))
-    review_picture = filename
+    review_picture = filename + file_extension
     review_title = request.form['title']
     review_description = request.form['description']
     review_rating = request.form['rating']
@@ -65,6 +65,7 @@ def view_all_themes():
         print('SQLite error: %s' % (' '.join(er.args)))
     data = cur.fetchall()
     return render_template("themes.html", details=data)
+
 
 @app.route('/themes/create', methods=['GET'])
 def create_theme():
