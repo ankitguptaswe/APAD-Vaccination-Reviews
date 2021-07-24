@@ -41,7 +41,10 @@ def reviews(user_id):
     # Assuming here that while filling the form, user will be prompted to choose hospital/pharmacy/vaccine name
     # in a dropdown and the user cannot type the name himself. To support this, we will be adding data in the db
     query = "SELECT " + review_table_name + "_ID FROM " + review_table_name + " WHERE name =\"" + review_entity_name + "\""
-    cur.execute(query)
+    try:
+        cur.execute(query)
+    except sqlite3.Error as er:
+        print('SQLite error: %s' % (' '.join(er.args)))
     data = cur.fetchone()[0]
     review_vaccine_id = data if review_theme.lower() == "vaccine" else None
     review_pharmacy_id = data if review_theme.lower() == "pharmacy" else None
@@ -50,7 +53,7 @@ def reviews(user_id):
     if file:
         filename = secure_filename(file.filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-    review_picture = convertToBinaryData(app.config['UPLOAD_FOLDER'] + '/' + filename)
+    review_picture = convertToBinaryData(os.path.join(app.config['UPLOAD_FOLDER'], filename))
     review_title = request.form['title']
     review_description = request.form['description']
     review_rating = request.form['rating']
@@ -64,12 +67,17 @@ def reviews(user_id):
                   review_picture,
                   review_description,
                   review_tags)
-    cur.execute(review_insert_query, data_tuple)
+    try:
+        cur.execute(review_insert_query, data_tuple)
+    except sqlite3.Error as er:
+        print('SQLite error: %s' % (' '.join(er.args)))
     result = cur.rowcount
-    print(result)
-    db.commit()
-    db.close()
-    return 'OK'
+    if result == 1:
+        db.commit()
+        db.close()
+        return 'OK'
+    else:
+        return 'Failed to insert data in db'
 
 
 if __name__ == '__main__':
