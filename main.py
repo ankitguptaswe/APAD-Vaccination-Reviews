@@ -95,6 +95,10 @@ def view_all_themes():
     data = cur.fetchall()
     return render_template("themes.html", details = data)
 
+@app.route('/themes/create', methods=['GET'])
+def create_theme():
+    return render_template("create_theme.html")
+
 
 if __name__ == '__main__':
     app.run(debug=True)
