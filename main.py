@@ -93,7 +93,7 @@ def view_all_themes():
     except sqlite3.Error as er:
         print('SQLite error: %s' % (' '.join(er.args)))
     data = cur.fetchall()
-    return data
+    return render_template("themes.html", details = data)
 
 
 if __name__ == '__main__':
