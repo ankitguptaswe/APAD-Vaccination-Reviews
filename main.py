@@ -50,7 +50,7 @@ def reviews(user_id):
     if file:
         filename = secure_filename(file.filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-    review_picture = convertToBinaryData('/tmp/' + filename)
+    review_picture = convertToBinaryData(app.config['UPLOAD_FOLDER'] + '/' + filename)
     review_title = request.form['title']
     review_description = request.form['description']
     review_rating = request.form['rating']
