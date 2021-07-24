@@ -1,23 +1,15 @@
 import sqlite3
 from flask import Flask, render_template, url_for, request, redirect
-import random
-from werkzeug.utils import secure_filename
+import secrets
 import os
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = '/tmp'
+app.config['UPLOAD_FOLDER'] = 'static/img/reviews'
 
 
 def setup_session():
     db = sqlite3.connect("reviews.db")
     return db
-
-
-def convertToBinaryData(filename):
-    # Convert digital data to binary format
-    with open(filename, 'rb') as file:
-        blobData = file.read()
-    return blobData
 
 
 @app.route('/<int:user_id>/post', methods=['POST'])
@@ -31,42 +23,20 @@ def reviews(user_id):
     cur = db.cursor()
     review_user_id = user_id
     review_theme = request.form['theme']
-    if review_theme.lower() == "vaccine":
-        review_table_name = "VACCINE"
-    elif review_theme.lower() == "pharmacy":
-        review_table_name = "PHARMACY"
-    else:
-        review_table_name = "HOSPITAL"
-    review_entity_name = request.form['name']
-    # Assuming here that while filling the form, user will be prompted to choose hospital/pharmacy/vaccine name
-    # in a dropdown and the user cannot type the name himself. To support this, we will be adding data in the db
-    query = "SELECT " + review_table_name + "_ID FROM " + review_table_name + " WHERE name =\"" + review_entity_name + "\""
-    try:
-        cur.execute(query)
-    except sqlite3.Error as er:
-        print('SQLite error: %s' % (' '.join(er.args)))
-    data = cur.fetchone()[0]
-    review_vaccine_id = data if review_theme.lower() == "vaccine" else None
-    review_pharmacy_id = data if review_theme.lower() == "pharmacy" else None
-    review_hospital_id = data if review_theme.lower() == "hospital" else None
     file = request.files['picture']
     if file:
-        filename = secure_filename(file.filename)
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-    review_picture = convertToBinaryData(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        filename = secrets.token_hex(16)
+        file_extension = os.path.splitext(file.filename)[1]
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename + file_extension))
+    review_picture = filename
     review_title = request.form['title']
     review_description = request.form['description']
     review_rating = request.form['rating']
     review_tags = request.form['tags']
-    review_id = random.randint(0, 900)
-    review_insert_query = "INSERT INTO REVIEWS(REVIEW_ID, USER_ID, TITLE, THEME, HOSPITAL_ID, PHARMACY_ID, \
-    VACCINE_ID, RATING, PICTURE, DESCRIPTION, TAGS) VALUES(?,?,?,?,?,?,?,?,?,?,?);"
-    data_tuple = (review_id, review_user_id, review_title, review_theme, review_hospital_id,
-                  review_pharmacy_id,
-                  review_vaccine_id, review_rating,
-                  review_picture,
-                  review_description,
-                  review_tags)
+    review_insert_query = "INSERT INTO REVIEWS(USER_ID, TITLE, THEME, RATING, PICTURE, DESCRIPTION, TAGS) " \
+                          "VALUES(?,?,?,?,?,?,?);"
+    data_tuple = (review_user_id, review_title, review_theme, review_rating, review_picture,
+                  review_description, review_tags)
     try:
         cur.execute(review_insert_query, data_tuple)
     except sqlite3.Error as er:
@@ -78,6 +48,7 @@ def reviews(user_id):
         return 'OK'
     else:
         return 'Failed to insert data in db'
+
 
 @app.route('/themes/all', methods=['GET'])
 def view_all_themes():
@@ -93,7 +64,7 @@ def view_all_themes():
     except sqlite3.Error as er:
         print('SQLite error: %s' % (' '.join(er.args)))
     data = cur.fetchall()
-    return render_template("themes.html", details = data)
+    return render_template("themes.html", details=data)
 
 
 if __name__ == '__main__':

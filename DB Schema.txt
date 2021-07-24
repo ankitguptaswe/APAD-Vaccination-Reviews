@@ -1,53 +1,51 @@
 CREATE TABLE USER(
-   USER_ID        INT     PRIMARY KEY     NOT NULL,
+   USER_ID        INTEGER     PRIMARY KEY     NOT NULL,
    NAME           TEXT    NOT NULL,
+   EMAIL          TEXT    NOT NULL,
    THEMES         TEXT    NOT NULL,
-   PICTURE        BLOB
+   PICTURE        TEXT
 );
 
 CREATE TABLE HOSPITAL(
-   HOSPITAL_ID    INT     PRIMARY KEY     NOT NULL,
+   HOSPITAL_ID    INTEGER     PRIMARY KEY     NOT NULL,
    NAME           TEXT    NOT NULL,
    LOCATION       TEXT    NOT NULL,
-   PICTURE        BLOB
+   PICTURE        TEXT
 );
 
 CREATE TABLE PHARMACY(
-   PHARMACY_ID    INT     PRIMARY KEY     NOT NULL,
+   PHARMACY_ID    INTEGER     PRIMARY KEY     NOT NULL,
    NAME           TEXT    NOT NULL,
    LOCATION       TEXT    NOT NULL,
-   PICTURE        BLOB
+   PICTURE        TEXT
 );
 
 CREATE TABLE VACCINE(
-   VACCINE_ID     INT     PRIMARY KEY     NOT NULL,
+   VACCINE_ID     INTEGER     PRIMARY KEY     NOT NULL,
    NAME           TEXT    NOT NULL,
-   MANUFACTURER   TEXT    NOT NULL,
    LOCATION       TEXT    NOT NULL,
-   PICTURE        BLOB
+   PICTURE        TEXT
 );
 
 CREATE TABLE REVIEWS(
-   REVIEW_ID      INT     PRIMARY KEY     NOT NULL,
-   USER_ID        INT                     NOT NULL,
+   REVIEW_ID      INTEGER     PRIMARY KEY     NOT NULL,
+   USER_ID        INTEGER                     NOT NULL,
    TITLE          TEXT                    NOT NULL,
    THEME          TEXT                    NOT NULL,
-   HOSPITAL_ID    INT,
-   PHARMACY_ID    INT,
-   VACCINE_ID     INT,
-   RATING         INT                     NOT NULL,
-   PICTURE        BLOB                    NOT NULL,
+   RATING         INTEGER                     NOT NULL,
+   PICTURE        TEXT                    NOT NULL,
    DESCRIPTION    TEXT                    NOT NULL,
    TAGS           TEXT                    NOT NULL
 );
 
 CREATE TABLE THEMES(
    THEME_NAME     TEXT     PRIMARY KEY     NOT NULL,
-   PICTURE        BLOB
+   PICTURE        TEXT,
+   DESCRIPTION    TEXT
 );
 
-INSERT INTO THEMES(THEME_NAME)
-VALUES('vaccine')
+INSERT INTO THEMES(THEME_NAME, DESCRIPTION)
+VALUES('pharmacy', 'Pharmacies which the user can visit for treatment/vaccination')
 
 INSERT INTO USER (USER_ID,NAME,THEMES)
 VALUES (1, 'Asad Aali', 'Vaccine');
