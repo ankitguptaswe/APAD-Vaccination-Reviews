@@ -79,6 +79,22 @@ def reviews(user_id):
     else:
         return 'Failed to insert data in db'
 
+@app.route('/themes/all', methods=['GET'])
+def view_all_themes():
+    """
+    This function/service is used to get all themes from the db
+    :return: string containing all themes
+    """
+    db = setup_session()
+    cur = db.cursor()
+    query = "SELECT * from THEMES"
+    try:
+        cur.execute(query)
+    except sqlite3.Error as er:
+        print('SQLite error: %s' % (' '.join(er.args)))
+    data = cur.fetchall()
+    return data
+
 
 if __name__ == '__main__':
     app.run(debug=True)
