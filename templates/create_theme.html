@@ -1,27 +1,21 @@
+<!doctype html>
 <html>
-
- <head>
-   <!-- <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"> -->
-   <link type="text/css" rel="stylesheet" href="../static/style.css">
- </head>
-
-
- <body>
-   <form method="POST" action="" enctype="multipart/form-data">
-     Theme name: <input type="text" id="th_name" value="Insert theme name">
+<body>
+  <form method="POST" action="" enctype="multipart/form-data">
+     Theme name: <input type="text" name = "th_name" id="th_name" value="Insert theme name">
      <br>
-     Theme description: <textarea id="th_description" rows="4" cols="50">Insert your theme's description</textarea>
+     Theme description: <textarea id="th_description" name="th_description" rows="4" cols="50">Insert your theme's description</textarea>
      <br>Upload a photo:
-     <p><input type="file" name="file" onchange="loadFile(event)"></p>
+     <p><input type="file" name="photo" id="photo" onchange="loadFile(event)"></p>
      <p><input type="submit" value="Submit"></p>
    </form>
 
    <script>
-       var loadFile = function(event) {
+     var loadFile = function(event) {
        var output = document.getElementById('output');
        output.src = URL.createObjectURL(event.target.files[0]);
        output.onload = function() {
-       URL.revokeObjectURL(output.src) // free memory
+         URL.revokeObjectURL(output.src) // free memory
        }
      };
    </script>
@@ -42,15 +36,11 @@
            <table border = 0 style = "width: 100%; height: 100%; top: 0; bottom: 0; left: 0; right: 0;">
              <tr>
                <td rowspan = 2 width=170><center><img <img id = "output"/ width="150" height="150"></center></td>
-               <td>Theme name: <b>blabla</b></td>
              </tr>
                <tr>
-                 <td style = "vertical-align: top; padding-top: 10px; padding-left: 10px;">Description: blabla</td>
+                 <td style = "vertical-align: top; padding-top: 10px; padding-left: 10px;"></td>
                </tr>
              </table>
          </td>
-
-
  </body>
-
 </html>
