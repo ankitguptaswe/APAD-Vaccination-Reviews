@@ -13,7 +13,7 @@ def setup_session():
 
 
 @app.route('/<int:user_id>/post', methods=['POST'])
-def reviews(user_id):
+def post_review(user_id):
     """
     This function/service is used to post review of a theme item by a user
     :param user_id: unique user id who is posting the review
@@ -65,6 +65,30 @@ def view_all_themes():
         print('SQLite error: %s' % (' '.join(er.args)))
     data = cur.fetchall()
     return render_template("themes.html", details=data)
+
+
+@app.route('/reports', methods=['GET'])
+def get_reports_from_tags():
+    """
+    This function/service is used to get all reports with matching tags
+    Here, assumption is that tags will be either a single tag or a string of comma separated multiple tags
+    e.g. valid tags i) 'austin' ii) 'cvs,austin,pfizer'
+    :return: string containing all themes
+    """
+    db = setup_session()
+    cur = db.cursor()
+    tags_filter = request.args.get('tags').split(',')
+    query = "SELECT * from REVIEWS WHERE "
+    for tag_item in tags_filter[:-1]:
+        query = query + "TAGS LIKE \'%" + tag_item + "%\' OR "
+    else:
+        query = query + "TAGS LIKE \'%" + tags_filter[-1] + "%\'"
+    try:
+        cur.execute(query)
+    except sqlite3.Error as er:
+        print('SQLite error: %s' % (' '.join(er.args)))
+    data = cur.fetchall()
+    return str(data)
 
 
 @app.route('/themes/create', methods=['GET'])
