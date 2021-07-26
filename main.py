@@ -1,16 +1,75 @@
+import datetime
 import sqlite3
 from flask import Flask, render_template, url_for, request, redirect
-import secrets
+from google.auth.transport import requests
+from google.cloud import datastore
+import google.oauth2.id_token
+import random
+from werkzeug.utils import secure_filename
 import os
 
-app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = 'static/img/reviews'
+datastore_client = datastore.Client()
 
+def store_time(email, dt):
+    entity = datastore.Entity(key=datastore_client.key('User', email, 'visit'))
+    entity.update({
+        'timestamp': dt
+    })
+
+    datastore_client.put(entity)
+
+def fetch_times(email, limit):
+    ancestor = datastore_client.key('User', email)
+    query = datastore_client.query(kind='visit', ancestor=ancestor)
+    query.order = ['-timestamp']
+
+    times = query.fetch(limit=limit)
+
+    return times
 
 def setup_session():
     db = sqlite3.connect("reviews.db")
     return db
 
+def convertToBinaryData(filename):
+    # Convert digital data to binary format
+    with open(filename, 'rb') as file:
+        blobData = file.read()
+    return blobData
+
+app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = 'static/img/reviews'
+firebase_request_adapter = requests.Request()
+
+@app.route('/')
+def root():
+    # Verify Firebase auth.
+    id_token = request.cookies.get("token")
+    error_message = None
+    claims = None
+    times = None
+
+    if id_token:
+        try:
+            # Verify the token against the Firebase Auth API. This example
+            # verifies the token on each page load. For improved performance,
+            # some applications may wish to cache results in an encrypted
+            # session store (see for instance
+            # http://flask.pocoo.org/docs/1.0/quickstart/#sessions).
+            claims = google.oauth2.id_token.verify_firebase_token(
+                id_token, firebase_request_adapter)
+
+            store_time(claims['email'], datetime.datetime.now())
+            times = fetch_times(claims['email'], 10)
+
+        except ValueError as exc:
+            # This will be raised if the token is expired or any other
+            # verification checks fail.
+            error_message = str(exc)
+
+    return render_template(
+        'index.html',
+        user_data=claims, error_message=error_message, times=times)
 
 @app.route('/<int:user_id>/post', methods=['POST'])
 def post_review(user_id):
@@ -49,9 +108,9 @@ def post_review(user_id):
     else:
         return 'Failed to insert data in db'
 
-
 @app.route('/themes/all', methods=['GET'])
-def view_all_themes():
+def view_themes():
+
     """
     This function/service is used to get all themes from the db
     :return: string containing all themes
@@ -65,7 +124,6 @@ def view_all_themes():
         print('SQLite error: %s' % (' '.join(er.args)))
     data = cur.fetchall()
     return render_template("themes.html", details=data)
-
 
 @app.route('/reports', methods=['GET'])
 def get_reports_from_tags():
@@ -90,11 +148,36 @@ def get_reports_from_tags():
     data = cur.fetchall()
     return str(data)
 
-
-@app.route('/themes/create', methods=['GET'])
+@app.route('/themes/create', methods=['GET', 'POST'])
 def create_theme():
-    return render_template("create_theme.html")
-
+    if request.method == 'POST':
+        th_name = request.form['th_name']
+        th_description = request.form['th_description']
+        th_photo = request.files['photo']
+        
+        uploads_dir = 'static/img/themes'
+        th_photo.save(os.path.join(uploads_dir, secure_filename(th_photo.filename)))
+        
+        db = setup_session()
+        sql = ''' INSERT INTO THEMES(THEME_NAME,PICTURE,DESCRIPTION)
+                  VALUES(?,?,?) '''
+        task = (th_name,th_photo.filename,th_description)
+        try:
+            cur = db.cursor()
+            cur.execute(sql, task)
+            db.commit()
+            return view_themes()
+        except:
+            return 'There was an issue adding your task'
+    else:
+        return render_template('create_theme.html')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # This is used when running locally only. When deploying to Google App
+    # Engine, a webserver process such as Gunicorn will serve the app. This
+    # can be configured by adding an `entrypoint` to app.yaml.
+    # Flask's development server will automatically serve static files in
+    # the "static" directory. See:
+    # http://flask.pocoo.org/docs/1.0/quickstart/#static-files. Once deployed,
+    # App Engine itself will serve those files as configured in app.yaml.
+    app.run(host='127.0.0.1', port=8080, debug=True)
