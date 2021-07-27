@@ -28,7 +28,7 @@ deactivate () {
     fi
 
     unset VIRTUAL_ENV
-    if [ ! "${1:-}" = "nondestructive" ] ; then
+    if [ ! "$1" = "nondestructive" ] ; then
     # Self destruct!
         unset -f deactivate
     fi
@@ -37,7 +37,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="/Users/asadaali/Google Drive/Summer 2021/APAD/Hw5/env"
+VIRTUAL_ENV="/home/apad_vaccination_reviews/APAD-Vaccination-Reviews/env"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
@@ -59,7 +59,7 @@ if [ -z "${VIRTUAL_ENV_DISABLE_PROMPT:-}" ] ; then
     else
     if [ "`basename \"$VIRTUAL_ENV\"`" = "__" ] ; then
         # special case for Aspen magic directories
-        # see https://aspen.io/
+        # see http://www.zetadev.com/software/aspen/
         PS1="[`basename \`dirname \"$VIRTUAL_ENV\"\``] $PS1"
     else
         PS1="(`basename \"$VIRTUAL_ENV\"`)$PS1"
