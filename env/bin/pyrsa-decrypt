@@ -1,6 +1,4 @@
-#!/bin/sh
-'''exec' "/Users/asadaali/Google Drive/Summer 2021/APAD/Hw5/env/bin/python" "$0" "$@"
-' '''
+#!/home/apad_vaccination_reviews/APAD-Vaccination-Reviews/env/bin/python3
 # -*- coding: utf-8 -*-
 import re
 import sys

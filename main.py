@@ -7,8 +7,12 @@ import google.oauth2.id_token
 import random
 from werkzeug.utils import secure_filename
 import os
+import pyrebase
 
+app = Flask(__name__)
+firebase_request_adapter = requests.Request()
 datastore_client = datastore.Client()
+app.config['UPLOAD_FOLDER'] = 'static/img/reviews'
 
 def store_time(email, dt):
     entity = datastore.Entity(key=datastore_client.key('User', email, 'visit'))
@@ -37,9 +41,14 @@ def convertToBinaryData(filename):
         blobData = file.read()
     return blobData
 
-app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = 'static/img/reviews'
-firebase_request_adapter = requests.Request()
+def update_db (sql):
+    db = setup_session()
+    try:
+        cur = db.cursor()
+        cur.execute(sql)
+        db.commit()
+    except:
+            return 'There was an issue adding your task'
 
 @app.route('/')
 def root():
@@ -110,7 +119,6 @@ def post_review(user_id):
 
 @app.route('/themes/all', methods=['GET'])
 def view_themes():
-
     """
     This function/service is used to get all themes from the db
     :return: string containing all themes
@@ -151,17 +159,45 @@ def get_reports_from_tags():
 @app.route('/themes/create', methods=['GET', 'POST'])
 def create_theme():
     if request.method == 'POST':
+        id_token = request.cookies.get("token")
+        error_message = None
+        claims = None
+        times = None
+        
+        if id_token:
+            try:
+                claims = google.oauth2.id_token.verify_firebase_token(
+                    id_token, firebase_request_adapter)
+
+            except ValueError as exc:
+                error_message = str(exc)
+
+        config = {
+            "apiKey": "AIzaSyAZh8jqAOWD42xPU9-EBIXXytNvNrtuUBE",
+            "authDomain": "vaccination-reviews-apad.firebaseapp.com",
+            "databaseURL": "accination-reviews-apad.appspot.com",
+            "projectId": "vaccination-reviews-apad",
+            "storageBucket": "vaccination-reviews-apad.appspot.com",
+            "messagingSenderId": "831689838983",
+            "appId": "1:831689838983:web:879a4fc40ea65457ed8322"
+        }
+
         th_name = request.form['th_name']
         th_description = request.form['th_description']
         th_photo = request.files['photo']
-        
-        uploads_dir = 'static/img/themes'
-        th_photo.save(os.path.join(uploads_dir, secure_filename(th_photo.filename)))
+
+        file_path = os.path.join('static/img/themes', th_name)
+        local_path = os.path.join('/tmp', th_name)
+        th_photo.save(local_path)
+        firebase = pyrebase.initialize_app(config)
+        storage = firebase.storage()
+        storage.child(file_path).put(local_path)
+        auth = firebase.auth()
         
         db = setup_session()
         sql = ''' INSERT INTO THEMES(THEME_NAME,PICTURE,DESCRIPTION)
                   VALUES(?,?,?) '''
-        task = (th_name,th_photo.filename,th_description)
+        task = (th_name,th_name,th_description)
         try:
             cur = db.cursor()
             cur.execute(sql, task)

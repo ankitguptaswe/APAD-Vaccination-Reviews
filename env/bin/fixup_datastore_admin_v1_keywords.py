@@ -1,4 +1,4 @@
-#!/Users/asadaali/Google Drive/Summer 2021/APAD/Hw5/env/bin/python
+#!/home/apad_vaccination_reviews/APAD-Vaccination-Reviews/env/bin/python3
 # -*- coding: utf-8 -*-
 
 # Copyright 2020 Google LLC
