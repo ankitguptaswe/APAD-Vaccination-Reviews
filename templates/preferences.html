@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+<body>
+  <form method="POST" action="" enctype="multipart/form-data">
+     <b>User ID:</b> {{ details.user_id }}
+     <br>
+     <b>User email:</b> {{ details.email }}
+     <br>
+     <b>Themes:</b><br>
+
+    <select multiple size="10" id="th_preferences" name="th_preferences">
+         {% for theme in themes %}
+         <option value="{{theme[0]}}">
+            {{theme[0]}}
+         </option>
+         {% endfor %}
+    </select>
+
+
+     <p><input type="submit" value="Submit"></p>
+   </form>
+ </body>
+</html>
