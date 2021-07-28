@@ -32,7 +32,6 @@ def fetch_times(email, limit):
     return times
 
 def setup_session(storage):
-
     storage.child("db/reviews.db").download("/tmp/reviews.db")
     db = sqlite3.connect("/tmp/reviews.db")
     return db
@@ -42,7 +41,6 @@ def push_db(storage, file_path, local_path):
     os.remove(local_path)
 
 def setup_firebase():
-
     config = {
     "apiKey": "AIzaSyAZh8jqAOWD42xPU9-EBIXXytNvNrtuUBE",
     "authDomain": "vaccination-reviews-apad.firebaseapp.com",
@@ -50,7 +48,8 @@ def setup_firebase():
     "projectId": "vaccination-reviews-apad",
     "storageBucket": "vaccination-reviews-apad.appspot.com",
     "messagingSenderId": "831689838983",
-    "appId": "1:831689838983:web:879a4fc40ea65457ed8322"
+    "appId": "1:831689838983:web:879a4fc40ea65457ed8322",
+    "serviceAccount": "vaccination-reviews-apad-9ae5ba882019.json"
 }
     firebase = pyrebase.initialize_app(config)
     storage = firebase.storage()
@@ -58,12 +57,15 @@ def setup_firebase():
 
     return storage
 
-def update_db (sql):
-    db = setup_session()
+
+def update_db (sql, task, storage):
+    db = setup_session(storage)
     try:
         cur = db.cursor()
-        cur.execute(sql)
+        cur.execute(sql, task)
         db.commit()
+        push_db(storage, "db/reviews.db", "/tmp/reviews.db")
+
     except:
             return 'There was an issue adding your task'
 
@@ -208,6 +210,41 @@ def view_themes():
         print('SQLite error: %s' % (' '.join(er.args)))
     data = cur.fetchall()
     return render_template("themes.html", details=data)
+
+@app.route('/themes/<string:theme_name>', methods=['GET'])
+def view_theme(theme_name):
+    """
+    This function/service is used to get a single theme from the db and all associated reviews
+    :return: string containing the theme
+    """
+    storage = setup_firebase()
+    db = setup_session(storage)
+    cur = db.cursor()
+    query = "SELECT * FROM 'THEMES' WHERE THEME_NAME = '" + theme_name + "'"
+    try:
+        cur.execute(query)
+    except sqlite3.Error as er:
+        print('SQLite error: %s' % (' '.join(er.args)))
+    data = cur.fetchall()
+    
+    query = "SELECT * FROM 'REVIEWS' WHERE THEME = '" + theme_name + "'"
+
+    try:
+        cur.execute(query)
+
+    except sqlite3.Error as er:
+        print('SQLite error: %s' % (' '.join(er.args)))
+
+    data1 = cur.fetchall()
+    list1 = []
+    list2 = []
+    for i in data1:
+        for x in i:
+            list1.append(str(x))
+        list2.append(list1)
+        list1 = []
+
+    return render_template("theme.html", details=data, details1=list2)
 
 @app.route('/reports', methods=['GET'])
 def get_reports_from_tags():

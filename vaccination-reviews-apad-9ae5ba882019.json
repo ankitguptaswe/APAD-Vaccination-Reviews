@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "vaccination-reviews-apad",
+  "private_key_id": "9ae5ba8820196be849317afd52501a1983ebd13e",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDEoa6jIhKDdSVk\nFiXPcpFHjqEEuj0/isFrKKai3knMkhHC6uNjFV0ToQCSOxo8jBLD7L+OoqwUKYiD\nak8aKMT618zyMmXpoDZKcKeIFE2EEeCmOd2YRhCdHyx7Lv2SHmff9bbTz2p63833\nZJ//QHZwFQSJxP/CZRWGKphs7GDQZPnlIythDZ+Xrrua4CCmRvQHVkpjzgbUEL88\n7Ctvw5L0yC9XKBFgkF6gnJwxXrjKIxuIpvUXGNWJTIXtDglzKCiWPcwsdFPgrYiD\nLocyb3A7Ly5V8it5EG5kHXvxHAnWdQ77P41negUH3HqcwdjGUZEHzp7EFf68K9LV\nLS7jtb87AgMBAAECggEAVTs+HzE8NCY5rG4bOpYPGiTdb9aoiNwE5gWrYWqYM6fX\nMhWttbvDaig+PqSGxVr0IWAEUnf5vg2Ywln46r5kT9Tt3cfxu/h5v/+f5tDiHs6/\nAV6QypoIRosGNWkTedxbK01vT9WW8qcDOOqxnatcC05Y9rzhHerCDzN0ebZmar2v\nkD72NBNLeYHJ13ny7PQ+R21iv3MPufaCteBPkXHGhlj888YO+nHwUfIfGyL/df8V\nJMN5UH/N6nlEg/7QFx/j9qqp06w1NrSAsgKPyk1V4Nb6RYh1LHPhTi/bQx+wvS9i\nKzSZEKHf5JM2GCKJ3Rvb7a68oUGippAqPsXnPIJKFQKBgQDqiKxNUUyD55MkuWcx\nUr3QlbWm+k0QQKclRcazSX7V6gfDb65Fi8y0KgMT8KmXsPw2tCc6gRXH3GWc/kXD\na3R0O0bkrkRbY/BnuB+0Bj1K4gvonqudz2YXAkvgXy6Z/l7fjFadKLBb9MUtsnWv\nmKgAZfgzfESL+j38zmfQa7tntQKBgQDWoO0PluvAR4wOi3dxvpx637aGs8sgwBlz\nI7arwdkVu+0YJaW9UVafMfeVGeOArSs1ju1yFkm4LvBxwnSN1f5bT2a8LfzGs/Ai\nn1lMptJPLc+Q7EoVh02j3kvGe+PJXhN6hJlDd15G2PJRw9D62Q3QukDYL+Kbfj+Q\nnm14AQ4BLwKBgQDXE6cO8HM+s2sYzn13me1AD0qaagep0+B0KdziJZAPE6My8oPa\ney2qOqy/6H9eAIwKjoM6/429zrvQkM3hO/V7cbC9naJKPQgF1bAdI2up9En/dSLk\ngYGZsB1tEVxnFAJk9wmm7d1tNrZsBbAu68uFMf2/GUKzKzUVVSOW2nTt0QKBgHCp\nHmbdgLh4lfMYkEU7meYBwkzo2YpCa9l9eKil426+K5FOSbabmI2N6/jvEvV7cL/3\nW3pUarPsp7f/K7E8D/0cK8BBn3sp/rYd0QEkXCbF1DutXKH6WO3YhQwWAha0dCMO\nsWixouIrhN8Ym3zhLJhQ/DK+yAN4/KLMFog0fYZvAoGAIOY5tTFtf4n2Tcd66rkw\nAGHMo25u+h8TNeYjDKSjdjRgbH8Q5M+FLbtlTWd7UtusPcKOKe+6+/J7MQgm3+dH\nY/vl7ZC0oLoewF6sNHDwDT8Rg4AobX8SU+IekXONhBFYQslsk//HJJx03D4xIeR1\nBVVtqgxrPV7fwMvb9L/9GME=\n-----END PRIVATE KEY-----\n",
+  "client_email": "vaccination-reviews-apad@appspot.gserviceaccount.com",
+  "client_id": "102263128295578707177",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/vaccination-reviews-apad%40appspot.gserviceaccount.com"
+}
