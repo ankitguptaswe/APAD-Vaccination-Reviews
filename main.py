@@ -4,7 +4,7 @@ from flask import Flask, render_template, url_for, request, redirect
 from google.auth.transport import requests
 from google.cloud import datastore
 import google.oauth2.id_token
-import random
+import random, secrets
 from werkzeug.utils import secure_filename
 import os
 import pyrebase
@@ -57,12 +57,6 @@ def setup_firebase():
     auth = firebase.auth()
 
     return storage
-
-def convertToBinaryData(filename):
-    # Convert digital data to binary format
-    with open(filename, 'rb') as file:
-        blobData = file.read()
-    return blobData
 
 def update_db (sql):
     db = setup_session()
@@ -125,42 +119,78 @@ def root():
         print("Show preferences")
         return render_template('index.html', user_data=claims, error_message=error_message)
 
-@app.route('/<int:user_id>/post', methods=['POST'])
-def post_review(user_id):
+@app.route('/review', methods=['GET'])
+def post_review():
     """
     This function/service is used to post review of a theme item by a user
     :param user_id: unique user id who is posting the review
     :return: None
     """
-    db = setup_session()
+    storage = setup_firebase()
+    db = setup_session(storage)
     cur = db.cursor()
-    review_user_id = user_id
-    review_theme = request.form['theme']
-    file = request.files['picture']
-    if file:
-        filename = secrets.token_hex(16)
-        file_extension = os.path.splitext(file.filename)[1]
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename + file_extension))
-    review_picture = filename + file_extension
-    review_title = request.form['title']
-    review_description = request.form['description']
-    review_rating = request.form['rating']
-    review_tags = request.form['tags']
-    review_insert_query = "INSERT INTO REVIEWS(USER_ID, TITLE, THEME, RATING, PICTURE, DESCRIPTION, TAGS) " \
-                          "VALUES(?,?,?,?,?,?,?);"
-    data_tuple = (review_user_id, review_title, review_theme, review_rating, review_picture,
-                  review_description, review_tags)
+    query = "SELECT * from THEMES"
     try:
-        cur.execute(review_insert_query, data_tuple)
+        cur.execute(query)
     except sqlite3.Error as er:
         print('SQLite error: %s' % (' '.join(er.args)))
-    result = cur.rowcount
-    if result == 1:
-        db.commit()
-        db.close()
-        return 'OK'
+    data = cur.fetchall()
+    return render_template("create_review.html", th_themes=data)
+
+
+
+@app.route('/post/review', methods=['GET', 'POST'])
+def post_review_to_db():
+    """
+    This function/service is used to post review of a theme item by a user
+    :param user_id: unique user id who is posting the review
+    :return: None
+    """
+
+    if request.method == 'POST':
+        id_token = request.cookies.get("token")
+        error_message = None
+        claims = None
+        times = None
+
+        if id_token:
+            try:
+                claims = google.oauth2.id_token.verify_firebase_token(
+                    id_token, firebase_request_adapter)
+
+            except ValueError as exc:
+                error_message = str(exc)
+
+        review_user_id = id_token
+        review_theme = request.form['th_themes']
+        review_photo = request.files['th_photo']
+        file_name = secrets.token_hex(16)
+        file_extension = os.path.splitext(review_photo.filename)[1]
+        file_path = os.path.join('static/img/themes', file_name + file_extension)
+        local_path = os.path.join('/tmp', file_name + file_extension)
+        review_photo.save(local_path)
+        review_title = request.form['th_title']
+        review_description = request.form['th_review']
+        review_rating = request.form['star']
+        review_tags = request.form['th_tags']
+
+        storage = setup_firebase()
+        db = setup_session(storage)
+        review_insert_query = "INSERT INTO REVIEWS(USER_ID, TITLE, THEME, RATING, PICTURE, DESCRIPTION, TAGS) " \
+                              "VALUES(?,?,?,?,?,?,?);"
+        data_tuple = (review_user_id, review_title, review_theme, review_rating, file_name+file_extension,
+                      review_description, review_tags)
+        try:
+            cur = db.cursor()
+            cur.execute(review_insert_query, data_tuple)
+            db.commit()
+            push_db(storage, file_path, local_path)
+            push_db(storage, "db/reviews.db", "/tmp/reviews.db")
+        except:
+            return 'There was an issue adding your review'
+        return render_template('create_review.html')
     else:
-        return 'Failed to insert data in db'
+        return render_template('create_review.html')
 
 @app.route('/themes/all', methods=['GET'])
 def view_themes():

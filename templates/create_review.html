@@ -1,0 +1,98 @@
+<!doctype html>
+<html>
+<head>
+    <style>
+    .txt-center {
+      text-align: center;
+    }
+    .hide {
+      display: none;
+    }
+
+    .clear {
+      float: none;
+      clear: both;
+    }
+
+    .rating {
+        width: 90px;
+        unicode-bidi: bidi-override;
+        direction: rtl;
+        text-align: center;
+        position: relative;
+    }
+
+    .rating > label {
+        float: right;
+        display: inline;
+        padding: 0;
+        margin: 0;
+        position: relative;
+        width: 1.1em;
+        cursor: pointer;
+        color: #000;
+    }
+
+    .rating > label:hover,
+    .rating > label:hover ~ label,
+    .rating > input.radio-btn:checked ~ label {
+        color: transparent;
+    }
+
+    .rating > label:hover:before,
+    .rating > label:hover ~ label:before,
+    .rating > input.radio-btn:checked ~ label:before,
+    .rating > input.radio-btn:checked ~ label:before {
+        content: "\2605";
+        position: absolute;
+        left: 0;
+        color: #FFD700;
+    }
+</style>
+</head>
+<body>
+  <form id="review-form" method="POST" action="/post/review" enctype="multipart/form-data">
+     <b>Themes:</b><br>
+     <select multiple size="10" id="th_themes" name="th_themes">
+         {% for theme in th_themes %}
+         <option value="{{theme[0]}}">
+            {{theme[0]}}
+         </option>
+         {% endfor %}
+    </select>
+      <br>
+     Title: <textarea id="th_title" name="th_title" rows="4" cols="50">Insert your review's title</textarea>
+     <br>
+     Review: <textarea id="th_review" name="th_review" rows="4" cols="50">Insert your review</textarea>
+      <br>
+    <div class="rating" id="th_rating" name="th_rating">
+            <input id="star5" name="star" type="radio" value="5" class="radio-btn hide" />
+            <label for="star5" >☆</label>
+            <input id="star4" name="star" type="radio" value="4" class="radio-btn hide" />
+            <label for="star4" >☆</label>
+            <input id="star3" name="star" type="radio" value="3" class="radio-btn hide" />
+            <label for="star3" >☆</label>
+            <input id="star2" name="star" type="radio" value="2" class="radio-btn hide" />
+            <label for="star2" >☆</label>
+            <input id="star1" name="star" type="radio" value="1" class="radio-btn hide" />
+            <label for="star1" >☆</label>
+            <div class="clear"></div>
+        </div>
+     <br>Upload a photo:
+     <p><input type="file" name="th_photo" id="th_photo" onchange="loadFile(event)"></p>
+      <br>
+     Tags: <textarea id="th_tags" name="th_tags" rows="4" cols="50">Insert tags for this review</textarea>
+     <p><input type="submit" value="Submit"></p>
+   </form>
+
+   <script>
+     var loadFile = function(event) {
+       var output = document.getElementById('output');
+       output.src = URL.createObjectURL(event.target.files[0]);
+       output.onload = function() {
+         URL.revokeObjectURL(output.src) // free memory
+       }
+     };
+   </script>
+ </body>
+</html>
