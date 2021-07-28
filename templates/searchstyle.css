@@ -1,0 +1,53 @@
+body {
+  background-color: #00cece;
+  margin: 0;
+  padding: 0;
+
+}
+
+.header{
+
+    height: 100vh;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: sans-serif;
+
+}
+
+h1{
+color: white;
+margin-bottom: 70 px
+letter-spacing: 2 px
+font-size: 144 px
+}
+
+.search-field{
+    height: 50 px;
+    padding: 10 px;
+    border: none;
+    border-radius: 25 px;
+    outline: none;
+
+
+}
+
+.Location {
+
+    width: 4000 px;
+
+}
+
+.search-btn{
+
+    height: 50 px;
+    width: 150 px;
+    background: #ffeb3b;
+    border: none;
+    color: #000;
+    border-radius: 25px;
+
+
+}
