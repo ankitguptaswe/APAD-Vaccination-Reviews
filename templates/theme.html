@@ -1,0 +1,87 @@
+<html>
+
+ <head>
+   <!-- <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"> -->
+   <link type="text/css" rel="stylesheet" href="../static/style.css">
+ </head>
+
+
+ <body>
+
+{% for detail in details %}
+
+<table border = 0 style = "width: 100%; top: 0; bottom: 0; left: 0; right: 0; border: 0px solid">
+<br>
+  <tr>
+    <td><!-- row 1 column 1 --></td>
+    <td><!-- row 1 column 2 --></td>
+    <td><!-- row 1 column 3 --></td>
+  </tr>
+    <tr>
+      <td><!-- row 2 column 1 --></td>
+
+      <!-- THE CARD STARTS HERE -->
+
+      <td class="card_theme">
+        <table border = 0 style = "width: 100%; height: 100%; top: 0; bottom: 0; left: 0; right: 0;">
+          <tr>
+            <td rowspan = 2 width=170><center><img src = "{{'https://firebasestorage.googleapis.com/v0/b/vaccination-reviews-apad.appspot.com/o/static%2Fimg%2Fthemes%2F' + detail [0] + '?alt=media&token=cd665436-5708-46af-88bc-1f5c868c4c30'}}"  width="150" height="150"></center></td>
+            <td>Theme name: <a> {{detail[0]}} </a></td>
+          </tr>
+            <tr>
+              <td style = "vertical-align: top; padding-top: 10px; padding-left: 10px;">Description: {{detail[2]}}</td>
+            </tr>
+          </table>
+      </td>
+
+{% endfor %}
+
+<h1>All Reviews associated with the theme: {{details [0][0]}}</h1>
+
+{% for detail in details1 %}
+
+<table border = 0 style = "width: 100%; top: 0; bottom: 0; left: 0; right: 0; border: 0px solid">
+<br>
+  <tr>
+    <td><!-- row 1 column 1 --></td>
+    <td><!-- row 1 column 2 --></td>
+    <td><!-- row 1 column 3 --></td>
+  </tr>
+    <tr>
+      <td><!-- row 2 column 1 --></td>
+
+      <!-- THE CARD STARTS HERE -->      
+
+      <td class="card_theme">
+        <table border = 0 style = "width: 100%; height: 100%; top: 0; bottom: 0; left: 0; right: 0;">
+             <tr>
+              <td style = "vertical-align: top; padding-top: 10px; padding-left: 10px;"></td>
+            </tr>
+           <tr>
+              <td style = "vertical-align: top; padding-top: 10px; padding-left: 10px;">Review Title: {{detail[2]}}</td>
+            </tr>            
+            <tr>
+              <td style = "vertical-align: top; padding-top: 10px; padding-left: 10px;">Rating: {{detail[4]}}</td>
+            </tr>  
+            <tr>
+              <td style = "vertical-align: top; padding-top: 10px; padding-left: 10px;">Review Description: {{detail[6]}}</td>
+            </tr>  
+            <tr>
+            <td rowspan = 2 width=170><img src = "{{'https://firebasestorage.googleapis.com/v0/b/vaccination-reviews-apad.appspot.com/o/static%2Fimg%2Freviews%2F' + detail[0] + '?alt=media&token=cd665436-5708-46af-88bc-1f5c868c4c30'}}"  width="150" height="150"></td> 
+            </tr>
+          </table>
+      </td>
+
+{% endfor %}
+
+     <!-- THE CARD FINISHES HERE -->
+
+            <td><!-- row 4 column 3 --></td>
+        </tr>
+
+  </table>
+
+
+ </body>
+
+</html>
