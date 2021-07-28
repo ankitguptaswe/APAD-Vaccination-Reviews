@@ -21,7 +21,7 @@
   <script src="{{ url_for('static', filename='script.js') }}"></script>
   <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <script src="https://www.gstatic.com/firebasejs/ui/4.4.0/firebase-ui-auth.js"></script>
-  <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/4.4.0/firebase-ui-auth.css" />  
+  <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/4.4.0/firebase-ui-auth.css" />
 </head>
 <body>
     <script src="https://www.gstatic.com/firebasejs/8.8.0/firebase-app.js"></script>
@@ -52,17 +52,18 @@
     <h2>Login info:</h2>
     {% if user_data %}
         <dl>
-        <dt>Name</dt><dd>{{ user_data['name'] }}</dd>
-        <dt>Email</dt><dd>{{ user_data['email'] }}</dd>
-        <dt>Last 10 visits</dt><dd>
-            {% for time in times %}
-            <p>{{ time['timestamp'] }}</p>
-            {% endfor %} </dd>
+        <dt><b>User ID</b></dt><dd>{{ user[0][0] }}</dd>
+        <dt><b>User Email</b></dt><dd>{{ user[0][1] }}</dd>
+        <dt><b>Your prefered themes are: </b></dt><dd>{{user[0][2]}}</dd>
         </dl>
     {% elif error_message %}
         <p>Error: {{ error_message }}</p>
     {% endif %}
     </div>
+<br><br><br><br>
+<h1><a href="../user/page/set">Setup preferences</a></h1>
+<h1><a href="../themes/all">See all themes</a></h1>
+<h1><a href="../themes/create">Create a theme</a></h1>
 
 </body>
 </html>
