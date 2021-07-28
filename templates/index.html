@@ -52,9 +52,9 @@
     <h2>Login info:</h2>
     {% if user_data %}
         <dl>
-        <dt><b>User ID</b></dt><dd>{{ user[0][0] }}</dd>
-        <dt><b>User Email</b></dt><dd>{{ user[0][1] }}</dd>
-        <dt><b>Your prefered themes are: </b></dt><dd>{{user[0][2]}}</dd>
+        <dt><b>User ID</b></dt><dd>{{ user_data.user_id }}</dd>
+        <dt><b>User Email</b></dt><dd>{{ user_data.email }}</dd>
+        <dt><b>Your prefered themes are: </b></dt><dd>{{user[2]}}</dd>
         </dl>
     {% elif error_message %}
         <p>Error: {{ error_message }}</p>

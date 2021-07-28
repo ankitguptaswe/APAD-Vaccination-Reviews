@@ -103,17 +103,15 @@ def root():
         storage = setup_firebase()
         db = setup_session(storage)
         cur = db.cursor()
-        query = "SELECT * from USER"
+        query = "SELECT * from USER WHERE USER_ID=\"" + claims['user_id'] + "\""
+
+        print(query)
 
         try:
             cur.execute(query)
         except sqlite3.Error as er:
             print('SQLite error: %s' % (' '.join(er.args)))
         data = cur.fetchall()
-
-        for user in data:
-            if user_email in user[1]:
-                print(user[2])
 
         return render_template('index.html', user_data=claims, error_message=error_message, user = data)
 
@@ -226,7 +224,7 @@ def view_theme(theme_name):
     except sqlite3.Error as er:
         print('SQLite error: %s' % (' '.join(er.args)))
     data = cur.fetchall()
-    
+
     query = "SELECT * FROM 'REVIEWS' WHERE THEME = '" + theme_name + "'"
 
     try:
@@ -363,6 +361,8 @@ def set_preferences():
                 token_expired = 1
 
         th_preferences = request.form.getlist("th_preferences")
+
+        print(th_preferences)
 
         if not token_expired and id_token:
             user_id = claims['user_id']
