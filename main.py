@@ -1,27 +1,29 @@
 import datetime
 import sqlite3
-from flask import Flask, render_template, url_for, request, redirect
+from flask import Flask, render_template, request
 from google.auth.transport import requests
 from google.cloud import datastore
 import google.oauth2.id_token
 import random, secrets
+import pymongo
+import urllib.parse
 from werkzeug.utils import secure_filename
 import os
-import pyrebase
-
-
-## MongoDB
-
-import pymongo
-from pymongo import MongoClient
-
-
-##
 
 app = Flask(__name__)
 firebase_request_adapter = requests.Request()
 datastore_client = datastore.Client()
 app.config['UPLOAD_FOLDER'] = 'static/img/reviews'
+
+
+def setup_mongodb_session():
+    username = urllib.parse.quote_plus('admin')
+    password = urllib.parse.quote_plus('asdasd@123')
+    client = pymongo.MongoClient(
+        "mongodb+srv://" + username + ":" + password + "@cluster0.le7xd.mongodb.net/?retryWrites=true&w=majority")
+    db = client['apadgroup8']
+    return db
+
 
 def store_time(email, dt):
     entity = datastore.Entity(key=datastore_client.key('User', email, 'visit'))
@@ -40,105 +42,67 @@ def fetch_times(email, limit):
 
     return times
 
-def setup_session(storage):
-    storage.child("db/reviews.db").download("/tmp/reviews.db")
-    db = sqlite3.connect("/tmp/reviews.db")
-    return db
-
-def push_db(storage, file_path, local_path):
-    storage.child(file_path).put(local_path)
-    os.remove(local_path)
-
-def setup_firebase():
-    config = {
-    "apiKey": "AIzaSyAZh8jqAOWD42xPU9-EBIXXytNvNrtuUBE",
-    "authDomain": "vaccination-reviews-apad.firebaseapp.com",
-    "databaseURL": "accination-reviews-apad.appspot.com",
-    "projectId": "vaccination-reviews-apad",
-    "storageBucket": "vaccination-reviews-apad.appspot.com",
-    "messagingSenderId": "831689838983",
-    "appId": "1:831689838983:web:879a4fc40ea65457ed8322",
-    "serviceAccount": "vaccination-reviews-apad-9ae5ba882019.json"
-}
-    firebase = pyrebase.initialize_app(config)
-    storage = firebase.storage()
-    auth = firebase.auth()
-
-    return storage
-
-
-def update_db (sql, task, storage):
-    db = setup_session(storage)
-    try:
-        cur = db.cursor()
-        cur.execute(sql, task)
-        db.commit()
-        push_db(storage, "db/reviews.db", "/tmp/reviews.db")
-
-    except:
-            return 'There was an issue adding your task'
-
-@app.route('/mongodb', methods=['GET', 'POST'])
-def mongo_db():
-    client = MongoClient()
-    db = client['apad_mongodb']
-    themes = db.themes
-    users = db.users
-    reviews = db.reviews
-
-    theme1 = {"name": "vaccines",
-            "about": "take and do not cry",
-            "image": "static/img/1.jpg"}
-
-    theme2 = {"name": "hospitals",
-            "about": "go and do not cry",
-            "image": "static/img/2.jpg"}
-
-    theme3 = {"name": "pharmacy",
-            "about": "wait and do not cry",
-            "image": "static/img/3.jpg"}
-
-    review1 = {"user_id": "as89dasdas90d09a",
-                "theme": "vaccine",
-                "photo": "uploaded_photo.jpg",
-                "title": "This vaccine SUCKS !",
-                "description": "I took the CROCODILE vaccine and I cant stop swimming anymore",
-                "rating": 3,
-                "tags": ["crocodile", "vaccine", "sucks"]}
-
-    user1 = {"user_id": "as89dasdas90d09a",
-            "themes": ["vaccines", "pharmacies"],
-            "email": "asdasd@gmail.com"}
-
-    #new_themes = themes.insert_many([theme1, theme2, theme3])
-    #new_review = reviews.insert_one(review1)
-    #new_user = users.insert_one(user1)
-
-    collections = db.list_collection_names()
-
-    print("BLABLABLABLALBLABLALLBLA")
-    print(collections)
-
-    #themes.drop()
-
-    if request.method == 'POST':
-        th_name = request.form['th_name']
-        th_description = request.form['th_description']
-        th_picture = request.files['photo']
-
-        theme4 = {"name": th_name,
-                "about": th_description}
-
-        themes.insert_one(theme4)
-
-        #delete_themes = request.form.getlist("aloha2")
-
-        #print("BLABLABLA")
-        #print(delete_themes)
-
-    data = themes.find()
-
-    return render_template("mongo_edit_themes.html", themes=data)
+# @app.route('/mongodb', methods=['GET', 'POST'])
+# def mongo_db():
+#     client = MongoClient()
+#     db = client['apad_mongodb']
+#     themes = db.themes
+#     users = db.users
+#     reviews = db.reviews
+#
+#     theme1 = {"name": "vaccines",
+#             "about": "take and do not cry",
+#             "image": "static/img/1.jpg"}
+#
+#     theme2 = {"name": "hospitals",
+#             "about": "go and do not cry",
+#             "image": "static/img/2.jpg"}
+#
+#     theme3 = {"name": "pharmacy",
+#             "about": "wait and do not cry",
+#             "image": "static/img/3.jpg"}
+#
+#     review1 = {"user_id": "as89dasdas90d09a",
+#                 "theme": "vaccine",
+#                 "photo": "uploaded_photo.jpg",
+#                 "title": "This vaccine SUCKS !",
+#                 "description": "I took the CROCODILE vaccine and I cant stop swimming anymore",
+#                 "rating": 3,
+#                 "tags": ["crocodile", "vaccine", "sucks"]}
+#
+#     user1 = {"user_id": "as89dasdas90d09a",
+#             "themes": ["vaccines", "pharmacies"],
+#             "email": "asdasd@gmail.com"}
+#
+#     #new_themes = themes.insert_many([theme1, theme2, theme3])
+#     #new_review = reviews.insert_one(review1)
+#     #new_user = users.insert_one(user1)
+#
+#     collections = db.list_collection_names()
+#
+#     print("BLABLABLABLALBLABLALLBLA")
+#     print(collections)
+#
+#     #themes.drop()
+#
+#     if request.method == 'POST':
+#         th_name = request.form['th_name']
+#         th_description = request.form['th_description']
+#         th_picture = request.files['photo']
+#
+#         theme4 = {"name": th_name,
+#                 "about": th_description}
+#
+#         themes.insert_one(theme4)
+#
+#         #delete_themes = request.form.getlist("aloha2")
+#
+#         #print("BLABLABLA")
+#         #print(delete_themes)
+#
+#     data = themes.find()
+#
+#     return render_template("mongo_edit_themes.html", themes=data)
 
 
 @app.route('/')
@@ -167,23 +131,24 @@ def root():
             token_expired = 1
 
     if not token_expired and id_token:
+
         user_id = claims['user_id']
         user_email = claims['email']
+        db = setup_mongodb_session()
 
-        file_path = "db/reviews.db"
-        local_path = "/tmp/reviews.db"
-        storage = setup_firebase()
-        db = setup_session(storage)
-        cur = db.cursor()
-        query = "SELECT * from USER WHERE USER_ID=\"" + claims['user_id'] + "\""
+        # find if user_id is present in users table
+        if db.users.find({"user_token": user_id }).count() == 0:
+            # Push user_id and user_email to db
+            db.users.insert({
+                "user_token":  user_id,
+                "email": user_email,
+                "themes": []
+            })
 
-        try:
-            cur.execute(query)
-        except sqlite3.Error as er:
-            print('SQLite error: %s' % (' '.join(er.args)))
-        data = cur.fetchall()
-
-        return render_template('index.html', user_data=claims, error_message=error_message, user = data)
+        curr = db.users.find({"user_token": user_id})
+        data = [cur for cur in curr]
+        print(data[0])
+        return render_template('index.html', user_data=claims, error_message=error_message, user=data[0])
 
     else:
         return render_template('index.html')
