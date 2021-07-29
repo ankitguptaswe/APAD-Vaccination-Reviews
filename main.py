@@ -9,6 +9,8 @@ import pymongo
 import urllib.parse
 from werkzeug.utils import secure_filename
 import os
+from PIL import Image
+import base64
 
 app = Flask(__name__)
 firebase_request_adapter = requests.Request()
@@ -202,122 +204,12 @@ def view_theme(theme_name):
     data = db.themes.find({"theme_name": theme_name})
     data1 = db.reviews.find({"theme": theme_name})
 
-    print(data[0])
-
     for i in data1:
         all_reviews.append(i)
 
 
     return render_template("theme.html", details=data[0], details1=all_reviews)
 
-# @app.route('/user/preferences', methods=['GET', 'POST'])
-# def mongo_db():
-    # Verify Firebase auth.
-    # id_token = request.cookies.get("token")
-    # error_message = None
-    # claims = None
-    # times = None
-    # token_expired = 0
-    #
-    # if id_token:
-    #     try:
-    #         # Verify the token against the Firebase Auth API. This example
-    #         # verifies the token on each page load. For improved performance,
-    #         # some applications may wish to cache results in an encrypted
-    #         # session store (see for instance
-    #         # http://flask.pocoo.org/docs/1.0/quickstart/#sessions).
-    #         claims = google.oauth2.id_token.verify_firebase_token(
-    #             id_token, firebase_request_adapter)
-    #
-    #     except ValueError as exc:
-    #         # This will be raised if the token is expired or any other
-    #         # verification checks fail.
-    #         error_message = str(exc)
-    #         token_expired = 1
-    #
-    # if not token_expired and id_token:
-    #
-    #     user_id = claims['user_id']
-    #     user_email = claims['email']
-    #     db = setup_mongodb_session()
-    #
-    #     # find if user_id is present in users table
-    #     if db.users.find({"user_token": user_id }).count() == 0:
-    #         # Push user_id and user_email to db
-    #         db.users.insert({
-    #             "user_token":  user_id,
-    #             "email": user_email,
-    #             "themes": []
-    #         })
-    #
-    #     curr = db.users.find({"user_token": user_id})
-    #     data = [cur for cur in curr]
-    #     print(data[0])
-    #     return render_template('preferences.html', user_data=claims, error_message=error_message, user=data[0])
-    # else:
-    #     return render_template('index.html')
-
-    #
-    #
-    # client = pymongo.MongoClient()
-    # db = client['apad_mongodb']
-    # themes = db.themes
-    # users = db.users
-    # reviews = db.reviews
-    #
-    # theme1 = {"name": "vaccines",
-    #         "about": "take and do not cry",
-    #         "image": "static/img/1.jpg"}
-    #
-    # theme2 = {"name": "hospitals",
-    #         "about": "go and do not cry",
-    #         "image": "static/img/2.jpg"}
-    #
-    # theme3 = {"name": "pharmacy",
-    #         "about": "wait and do not cry",
-    #         "image": "static/img/3.jpg"}
-    #
-    # review1 = {"user_id": "as89dasdas90d09a",
-    #             "theme": "vaccine",
-    #             "photo": "uploaded_photo.jpg",
-    #             "title": "This vaccine SUCKS !",
-    #             "description": "I took the CROCODILE vaccine and I cant stop swimming anymore",
-    #             "rating": 3,
-    #             "tags": ["crocodile", "vaccine", "sucks"]}
-    #
-    # user1 = {"user_id": "as89dasdas90d09a",
-    #         "themes": ["vaccines", "pharmacies"],
-    #         "email": "asdasd@gmail.com"}
-    #
-    # #new_themes = themes.insert_many([theme1, theme2, theme3])
-    # #new_review = reviews.insert_one(review1)
-    # #new_user = users.insert_one(user1)
-    #
-    # collections = db.list_collection_names()
-    #
-    # print("BLABLABLABLALBLABLALLBLA")
-    # print(collections)
-    #
-    # #themes.drop()
-    #
-    # if request.method == 'POST':
-    #     th_name = request.form['th_name']
-    #     th_description = request.form['th_description']
-    #     th_picture = request.files['photo']
-    #
-    #     theme4 = {"name": th_name,
-    #             "about": th_description}
-    #
-    #     themes.insert_one(theme4)
-    #
-    #     #delete_themes = request.form.getlist("aloha2")
-    #
-    #     #print("BLABLABLA")
-    #     #print(delete_themes)
-    #
-    # data = themes.find()
-    #
-    # return render_template("mongo_edit_themes.html", themes=data)
 
 @app.route('/review', methods=['GET'])
 def post_review():
@@ -326,16 +218,12 @@ def post_review():
     :param user_id: unique user id who is posting the review
     :return: None
     """
-    storage = setup_firebase()
-    db = setup_session(storage)
-    cur = db.cursor()
-    query = "SELECT * from THEMES"
-    try:
-        cur.execute(query)
-    except sqlite3.Error as er:
-        print('SQLite error: %s' % (' '.join(er.args)))
-    data = cur.fetchall()
+    db = setup_mongodb_session()
+    themes = db.themes.find()
+    data = [theme for theme in themes]
+    print(data)
     return render_template("create_review.html", th_themes=data)
+
 
 @app.route('/post/review', methods=['GET', 'POST'])
 def post_review_to_db():
@@ -346,6 +234,7 @@ def post_review_to_db():
     """
 
     if request.method == 'POST':
+        db = setup_mongodb_session()
         id_token = request.cookies.get("token")
         error_message = None
         claims = None
@@ -362,31 +251,26 @@ def post_review_to_db():
         review_user_id = id_token
         review_theme = request.form['th_themes']
         review_photo = request.files['th_photo']
-        file_name = secrets.token_hex(16)
-        file_extension = os.path.splitext(review_photo.filename)[1]
-        file_path = os.path.join('static/img/themes', file_name + file_extension)
-        local_path = os.path.join('/tmp', file_name + file_extension)
+        filename = secrets.token_hex(16)
+        local_path = os.path.join('/tmp', filename)
         review_photo.save(local_path)
+        with open(local_path, "rb") as imageFile:
+            image_string = base64.b64encode(imageFile.read())
+
         review_title = request.form['th_title']
         review_description = request.form['th_review']
         review_rating = request.form['star']
         review_tags = request.form['th_tags']
-
-        storage = setup_firebase()
-        db = setup_session(storage)
-        review_insert_query = "INSERT INTO REVIEWS(USER_ID, TITLE, THEME, RATING, PICTURE, DESCRIPTION, TAGS) " \
-                              "VALUES(?,?,?,?,?,?,?);"
-        data_tuple = (review_user_id, review_title, review_theme, review_rating, file_name+file_extension,
-                      review_description, review_tags)
-        try:
-            cur = db.cursor()
-            cur.execute(review_insert_query, data_tuple)
-            db.commit()
-            push_db(storage, file_path, local_path)
-            push_db(storage, "db/reviews.db", "/tmp/reviews.db")
-        except:
-            return 'There was an issue adding your review'
-        return render_template('create_review.html')
+        db.reviews.insert({
+            "user_token": review_user_id,
+            "title": review_title,
+            "theme": review_theme,
+            "rating": review_rating,
+            "picture": image_string,
+            "description": review_description,
+            "tags": list(review_tags)
+        })
+        return render_template('feed.html')
     else:
         return render_template('create_review.html')
 
