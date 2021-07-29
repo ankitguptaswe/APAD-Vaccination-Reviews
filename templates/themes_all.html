@@ -1,0 +1,54 @@
+<html>
+
+ <head>
+   <!-- <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"> -->
+   <link type="text/css" rel="stylesheet" href="../static/style.css">
+ </head>
+
+
+ <body>
+
+<!-- LOOP -->
+
+{% for i in themes_data %}
+
+<table border = 0 style = "width: 100%; top: 0; bottom: 0; left: 0; right: 0; border: 0px solid">
+<br>
+  <tr>
+    <td><!-- row 1 column 1 --></td>
+    <td><!-- row 1 column 2 --></td>
+    <td><!-- row 1 column 3 --></td>
+  </tr>
+    <tr>
+      <td><!-- row 2 column 1 --></td>
+
+      <!-- THE CARD STARTS HERE -->
+
+      <td class="card_theme">
+        <table border = 0 style = "width: 100%; height: 100%; top: 0; bottom: 0; left: 0; right: 0;">
+          <tr>
+            <td rowspan = 2 width=170><center><img src = "/static/img/themes/{{i['picture']}}"  width="150" height="150"></center></td>
+            <td>Theme name: <a href="{{i['theme_name']}}">{{i['theme_name']}}</a></td>
+          </tr>
+            <tr>
+              <td style = "vertical-align: top; padding-top: 10px; padding-left: 10px;">{{i['description']}}</td>
+            </tr>
+          </table>
+      </td>
+
+{% endfor %}
+
+     <!-- THE CARD FINISHES HERE -->
+
+            <td><!-- row 4 column 3 --></td>
+        </tr>
+
+  </table>
+
+  <br><br>
+  <a href="/preferences">Back to preferences</a><br>
+  <a href="{{ url_for('create_theme') }}">Create new theme</a>
+
+ </body>
+
+</html>

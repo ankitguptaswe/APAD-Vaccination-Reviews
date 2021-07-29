@@ -1,0 +1,27 @@
+<html>
+
+<body>
+  <h1>Setup user preferences</h1>
+  <b>User email: </b>  {{details['email']}}
+    <br>
+  <b>User themes: </b>  {{details['themes']}}
+    <br>
+
+  <form method="POST" action="" enctype="multipart/form-data">
+    <h1>Themes available for you to choose</h1>
+    <select multiple size="10" id="th_preferences" name="th_preferences">
+    {% for theme in all_themes %}
+         <option value="{{theme}}">
+            {{theme}}
+         </option>
+    {% endfor %}
+    </select>
+    <p><input type="submit" value="Submit"></p>
+  </form>
+<br><br>
+  <a href="/preferences">Back to preferences</a><br>
+  <a href="{{ url_for('create_theme') }}">Create new theme</a>
+
+</body>
+
+</html>
