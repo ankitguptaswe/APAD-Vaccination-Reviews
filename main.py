@@ -9,6 +9,15 @@ from werkzeug.utils import secure_filename
 import os
 import pyrebase
 
+
+## MongoDB
+
+import pymongo
+from pymongo import MongoClient
+
+
+##
+
 app = Flask(__name__)
 firebase_request_adapter = requests.Request()
 datastore_client = datastore.Client()
@@ -68,6 +77,69 @@ def update_db (sql, task, storage):
 
     except:
             return 'There was an issue adding your task'
+
+@app.route('/mongodb', methods=['GET', 'POST'])
+def mongo_db():
+    client = MongoClient()
+    db = client['apad_mongodb']
+    themes = db.themes
+    users = db.users
+    reviews = db.reviews
+
+    theme1 = {"name": "vaccines",
+            "about": "take and do not cry",
+            "image": "static/img/1.jpg"}
+
+    theme2 = {"name": "hospitals",
+            "about": "go and do not cry",
+            "image": "static/img/2.jpg"}
+
+    theme3 = {"name": "pharmacy",
+            "about": "wait and do not cry",
+            "image": "static/img/3.jpg"}
+
+    review1 = {"user_id": "as89dasdas90d09a",
+                "theme": "vaccine",
+                "photo": "uploaded_photo.jpg",
+                "title": "This vaccine SUCKS !",
+                "description": "I took the CROCODILE vaccine and I cant stop swimming anymore",
+                "rating": 3,
+                "tags": ["crocodile", "vaccine", "sucks"]}
+
+    user1 = {"user_id": "as89dasdas90d09a",
+            "themes": ["vaccines", "pharmacies"],
+            "email": "asdasd@gmail.com"}
+
+    #new_themes = themes.insert_many([theme1, theme2, theme3])
+    #new_review = reviews.insert_one(review1)
+    #new_user = users.insert_one(user1)
+
+    collections = db.list_collection_names()
+
+    print("BLABLABLABLALBLABLALLBLA")
+    print(collections)
+
+    #themes.drop()
+
+    if request.method == 'POST':
+        th_name = request.form['th_name']
+        th_description = request.form['th_description']
+        th_picture = request.files['photo']
+
+        theme4 = {"name": th_name,
+                "about": th_description}
+
+        themes.insert_one(theme4)
+
+        #delete_themes = request.form.getlist("aloha2")
+
+        #print("BLABLABLA")
+        #print(delete_themes)
+
+    data = themes.find()
+
+    return render_template("mongo_edit_themes.html", themes=data)
+
 
 @app.route('/')
 def root():
