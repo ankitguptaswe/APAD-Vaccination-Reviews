@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+<body>
+  <h1>Create a new theme:</h1>
+  <form method="POST" action="" enctype="multipart/form-data">
+     Theme name:
+     <br><input type="text" name = "th_name" id="th_name">
+     <br><br>
+     Theme description:
+     <br><textarea id="th_description" name="th_description" rows="1" cols="50"></textarea>
+     <br><br>
+     Upload a photo:
+     <br><input type="file" name="photo" id="photo" onchange="loadFile(event)">
+     <br><br><br><input type="submit" value="Save">
+   </form>
+   <br><br>
+   <a href="/preferences">Back to preferences</a><br>
+   <a href="/themes/all">See all themes</a><br>
+
+
+ </body>
+</html>
