@@ -1,12 +1,39 @@
-<!doctype html>
 <html>
+<head>
+  <title>Datastore and Firebase Auth Example</title>
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+  <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="https://www.gstatic.com/firebasejs/ui/4.4.0/firebase-ui-auth.js"></script>
+  <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/4.4.0/firebase-ui-auth.css" />
+</head>
 <body>
+    <script src="https://www.gstatic.com/firebasejs/8.8.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.8.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.8.0/firebase-analytics.js"></script>
+    <script>
+    var firebaseConfig = {
+        apiKey: "AIzaSyAZh8jqAOWD42xPU9-EBIXXytNvNrtuUBE",
+        authDomain: "vaccination-reviews-apad.firebaseapp.com",
+        projectId: "vaccination-reviews-apad",
+        storageBucket: "vaccination-reviews-apad.appspot.com",
+        messagingSenderId: "831689838983",
+        appId: "1:831689838983:web:879a4fc40ea65457ed8322",
+        measurementId: "G-YE8X2V2X6R"
+    };
+    firebase.initializeApp(firebaseConfig);
+    firebase.analytics();
+    </script>
+
   <form method="POST" action="" enctype="multipart/form-data">
      <b>User ID:</b> {{ details.user_id }}
-     <br>
+     <br><br>
      <b>User email:</b> {{ details.email }}
+     <br><br>
+     <b>Themes:</b><br> {{ user[0][2] }}
      <br>
-     <b>Themes:</b><br>
+
+     <br>
+     <b>Want to select new themes ?</b><br>
 
     <select multiple size="10" id="th_preferences" name="th_preferences">
          {% for theme in themes %}
@@ -19,5 +46,13 @@
 
      <p><input type="submit" value="Submit"></p>
    </form>
+   <a href="/home">Go back to home page</a>
+
+   <div id="firebaseui-auth-container"></div>
+
+   <button id="sign-out" hidden=true>Sign Out</button>
+
+   <div id="login-info" hidden=true>
+
  </body>
 </html>

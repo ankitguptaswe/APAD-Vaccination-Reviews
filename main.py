@@ -105,8 +105,6 @@ def root():
         cur = db.cursor()
         query = "SELECT * from USER WHERE USER_ID=\"" + claims['user_id'] + "\""
 
-        print(query)
-
         try:
             cur.execute(query)
         except sqlite3.Error as er:
@@ -116,8 +114,7 @@ def root():
         return render_template('index.html', user_data=claims, error_message=error_message, user = data)
 
     else:
-        print("Show preferences")
-        return render_template('index.html', user_data=claims, error_message=error_message)
+        return render_template('index.html')
 
 @app.route('/review', methods=['GET'])
 def post_review():
@@ -310,23 +307,71 @@ def create_theme():
 
 @app.route('/user/page/set', methods=['GET', 'POST'])
 def set_preferences():
-    if request.method == 'GET':
-        """
-        This function/service is used to get all themes from the db
-        :return: string containing all themes
-        """
-        id_token = request.cookies.get("token")
-        error_message = None
-        claims = None
-        times = None
+    # Verify Firebase auth.
+    id_token = request.cookies.get("token")
+    error_message = None
+    claims = None
+    times = None
+    token_expired = 0
 
-        if id_token:
-            try:
-                claims = google.oauth2.id_token.verify_firebase_token(
-                    id_token, firebase_request_adapter)
+    if id_token:
+        try:
+            # Verify the token against the Firebase Auth API. This example
+            # verifies the token on each page load. For improved performance,
+            # some applications may wish to cache results in an encrypted
+            # session store (see for instance
+            # http://flask.pocoo.org/docs/1.0/quickstart/#sessions).
+            claims = google.oauth2.id_token.verify_firebase_token(
+                id_token, firebase_request_adapter)
 
-            except ValueError as exc:
-                error_message = str(exc)
+        except ValueError as exc:
+            # This will be raised if the token is expired or any other
+            # verification checks fail.
+            error_message = str(exc)
+            token_expired = 1
+    if request.method == 'POST':
+        preferences = request.form.getlist("th_preferences")
+        user_id = claims['user_id']
+        user_email = claims['email']
+        file_path = "db/reviews.db"
+        local_path = "/tmp/reviews.db"
+        storage = setup_firebase()
+        db = setup_session(storage)
+        sql = "UPDATE USER SET THEMES=\"" + ",".join(preferences) + "\" WHERE USER_ID=" + user_id
+        task = (",".join(preferences),user_id)
+
+        print(user_id)
+        print(task)
+        print(",".join(preferences))
+        print(sql)
+
+        try:
+            cur = db.cursor()
+            cur.execute(sql, task)
+            db.commit()
+            #push_db(storage, file_path, local_path)
+            push_db(storage, "db/reviews.db", "/tmp/reviews.db")
+            #return view_themes()
+        except:
+            return 'There was an issue upating your task'
+            ### BUG : Fix the insert UPDATE section above
+
+    if not token_expired and id_token:
+        user_id = claims['user_id']
+        user_email = claims['email']
+
+        file_path = "db/reviews.db"
+        local_path = "/tmp/reviews.db"
+        storage = setup_firebase()
+        db = setup_session(storage)
+        cur = db.cursor()
+        query = "SELECT * from USER WHERE USER_ID=\"" + claims['user_id'] + "\""
+
+        try:
+            cur.execute(query)
+        except sqlite3.Error as er:
+            print('SQLite error: %s' % (' '.join(er.args)))
+        data = cur.fetchall()
 
         storage = setup_firebase()
         db = setup_session(storage)
@@ -336,95 +381,13 @@ def set_preferences():
             cur.execute(query)
         except sqlite3.Error as er:
             print('SQLite error: %s' % (' '.join(er.args)))
-        data = cur.fetchall()
+        themes = cur.fetchall()
 
-        return render_template("preferences.html", details=claims, themes=data)
+        return render_template('preferences.html', details=claims, error_message=error_message, user=data, themes=themes)
 
-    elif request.method == 'POST':
-        """
-        This function/service is used to get all themes from the db
-        :return: string containing all themes
-        """
-        id_token = request.cookies.get("token")
-        error_message = None
-        claims = None
-        times = None
-        token_expired = 0
-
-        if id_token:
-            try:
-                claims = google.oauth2.id_token.verify_firebase_token(
-                    id_token, firebase_request_adapter)
-
-            except ValueError as exc:
-                error_message = str(exc)
-                token_expired = 1
-
-        th_preferences = request.form.getlist("th_preferences")
-
-        print(th_preferences)
-
-        if not token_expired and id_token:
-            user_id = claims['user_id']
-            user_email = claims['email']
-
-            file_path = "db/reviews.db"
-            local_path = "/tmp/reviews.db"
-            storage = setup_firebase()
-            db = setup_session(storage)
-            cur = db.cursor()
-            query = "SELECT * from USER"
-
-            try:
-                cur.execute(query)
-            except sqlite3.Error as er:
-                print('SQLite error: %s' % (' '.join(er.args)))
-            data = cur.fetchall()
-
-            print(data)
-
-            preferences = th_preferences
-
-            if user_id in data:
-                storage = setup_firebase()
-                db = setup_session(storage)
-                sql = '''  UPDATE USER SET THEMES = ? WHERE id = ? '''
-                task = (",".join(preferences),user_id)
-
-                print(task)
-
-                try:
-                    cur = db.cursor()
-                    cur.execute(sql, task)
-                    db.commit()
-                    #push_db(storage, file_path, local_path)
-                    push_db(storage, "db/reviews.db", "/tmp/reviews.db")
-                    #return view_themes()
-                except:
-                    return 'There was an issue upating your task'
-                    ### BUG : Fix the insert UPDATE section above
-
-            else:
-                storage = setup_firebase()
-                db = setup_session(storage)
-                sql = ''' INSERT INTO USER(USER_ID, EMAIL, THEMES)
-                          VALUES(?,?,?) '''
-                task = (user_id,user_email,",".join(preferences))
-                try:
-                    cur = db.cursor()
-                    cur.execute(sql, task)
-                    db.commit()
-                    #push_db(storage, file_path, local_path)
-                    push_db(storage, "db/reviews.db", "/tmp/reviews.db")
-                    #return view_themes()
-                except:
-                    return 'There was an issue adding your task'
-
-                return render_template('index.html', user_data=claims, error_message=error_message)
-
-        return render_template('index.html')
     else:
         return render_template('index.html')
+
 
 if __name__ == '__main__':
     # This is used when running locally only. When deploying to Google App
