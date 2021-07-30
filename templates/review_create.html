@@ -1,6 +1,13 @@
 <!doctype html>
 <html>
 <head>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link href="alternatesearchstyle.css" rel="stylesheet" type="text/css"/>
+    <style>
+* {box-sizing: border-box;}
+    </style>
+
     <style>
     .txt-center {
       text-align: center;
@@ -51,9 +58,27 @@
 </style>
 </head>
 <body>
+
+<div class="topnav">
+  <a class="active" href="#home">Home</a>
+  <a href="#Feed">Feed</a>
+  <a href="#Create Theme">Theme</a>
+  <a href="#See All Themes">See All Themes</a>
+  <a href="#Themes">Theme</a>
+  <a href="#Preferences">Preferences</a>
+  <a href="#Set Preferences">Set Preferences</a>
+  <div class="search-container">
+    <form action="/action_page.php">
+      <input type="text" placeholder="Search.." name="search">
+      <button type="submit"><i class="fa fa-search"></i></button>
+    </form>
+  </div>
+</div>
+
+<div style="padding-left:650px">
   <h1>Create a review</h1>
     <form method="POST" action="" enctype="multipart/form-data">
-    <h1>Themes available for you to choose</h1>
+    <h1>Themes available for you to choose:</h1>
     <select size="10" id="th_preferences" name="th_preferences">
     {% for theme in themes %}
          <option value="{{theme}}">
@@ -89,7 +114,4 @@
    </form>
 <br><br>
    <a href="{{ url_for('view_themes') }}">See all themes</a><br>
-   <a href="{{ url_for('create_theme') }}">Create new theme</a>
-
- </body>
-</html>
+</div>
