@@ -1,6 +1,14 @@
 <!doctype html>
 <html>
 <head>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link href="alternatesearchstyle.css" rel="stylesheet" type="text/css"/>
+
+    <style>
+* {box-sizing: border-box;}
+    </style>
+
     <style>
     .txt-center {
       text-align: center;
@@ -51,6 +59,28 @@
 </style>
 </head>
 <body>
+
+
+
+<div class="topnav">
+  <a class="active" href="#home">Home</a>
+  <a href="#about">About</a>
+  <a href="#contact">Contact</a>
+  <div class="search-container">
+    <form action="/action_page.php">
+      <input type="text" placeholder="Search.." name="search">
+      <button type="submit"><i class="fa fa-search"></i></button>
+    </form>
+  </div>
+</div>
+
+<div style="padding-left:16px">
+  <h2>Responsive Search Bar</h2>
+  <p>Random Text.</p>
+  <p>Random Text.</p>
+</div>
+
+
   <form id="review-form" method="POST" action="/post/review" enctype="multipart/form-data">
      <b>Themes:</b><br>
      <select multiple size="10" id="th_themes" name="th_themes">
@@ -94,5 +124,8 @@
        }
      };
    </script>
+
+
+
  </body>
 </html>
