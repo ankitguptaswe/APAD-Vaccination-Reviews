@@ -25,7 +25,7 @@
       <td class="card_theme">
         <table border = 0 style = "width: 100%; height: 100%; top: 0; bottom: 0; left: 0; right: 0;">
           <tr>
-            <td rowspan = 2 width=170><center><img src = "/static/img/themes/{{details['picture']}}"  width="150" height="150"></center></td>
+            <td rowspan = 2 width=170><center><img src = "https://storage.googleapis.com/apad-storage/img/themes/{{details['picture']}}"  width="150" height="150"></center></td>
             <td>Theme name: <a> {{details['theme_name']}} </a></td>
           </tr>
             <tr>
@@ -39,12 +39,12 @@
 <h1>All reviews associated with the theme: {{details['theme_name']}}</h1>
 
 {% for review in details1 %}
-
+{{review['picture']}}
 <!-- new loop-->
            <td class="card">
              <table border = 0 style = "width: 100%; height: 100%; top: 0; bottom: 0; left: 0; right: 0;">
                <tr>
-                 <td colspan = 2 rowspan = 3><center><img src = "../static/img/{{review['picture']}}" width="150" height="150"></center></td>
+                 <td colspan = 2 rowspan = 3><center><img src="data:image/png;base64,{{ review['picture'] }}" alt="Red dot"  width="150" height="150"/></center></td>
                  <td><b>{{review['title']}}</b></td>
                </tr>
                  <tr>
@@ -113,7 +113,8 @@
 
   </table>
 
-  <a href="/themes/all">See all themes</a><br>
+  <a href="{{ url_for('view_themes') }}">See all themes</a><br>
+  <a href="{{ url_for('create_review') }}">Create a review</a>
  </body>
 
 </html>
