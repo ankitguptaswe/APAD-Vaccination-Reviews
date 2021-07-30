@@ -26,6 +26,8 @@ import pymongo
 import urllib.parse
 from werkzeug.utils import secure_filename
 import os
+from PIL import Image
+import base64
 
 # Bucket Google Cloud Storage
 from io import BytesIO
