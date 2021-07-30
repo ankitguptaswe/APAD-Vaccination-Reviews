@@ -63,6 +63,35 @@ def fetch_times(email, limit):
 
     return times
 
+def is_user_authenticated():
+    # Verify Firebase auth.
+    id_token = request.cookies.get("token")
+    error_message = None
+    claims = None
+    times = None
+    token_expired = 0
+
+    if id_token:
+        try:
+            # Verify the token against the Firebase Auth API. This example
+            # verifies the token on each page load. For improved performance,
+            # some applications may wish to cache results in an encrypted
+            # session store (see for instance
+            # http://flask.pocoo.org/docs/1.0/quickstart/#sessions).
+            claims = google.oauth2.id_token.verify_firebase_token(
+                id_token, firebase_request_adapter)
+
+        except ValueError as exc:
+            # This will be raised if the token is expired or any other
+            # verification checks fail.
+            error_message = str(exc)
+            token_expired = 1
+
+    if not token_expired and id_token:
+        return claims
+    else:
+        return False
+
 def update_user_theme(user_email, themes):
     db = setup_mongodb_session()
     #print(user_email)
@@ -127,7 +156,6 @@ def root():
         data = [cur for cur in curr]
         print(data[0])
         return render_template('index.html', user_data=claims, error_message=error_message, user=data[0])
-
     else:
         return render_template('index.html')
 
@@ -236,13 +264,12 @@ def view_theme(theme_name):
     data = db.themes.find({"theme_name": theme_name})
     data1 = db.reviews.find({"theme": theme_name})
 
-    print(data[0])
-
     for i in data1:
         all_reviews.append(i)
 
 
     return render_template("theme.html", details=data[0], details1=all_reviews)
+
 
 @app.route('/reviews/create', methods=['GET', 'POST'])
 def create_review():
@@ -264,13 +291,10 @@ def create_review():
 
     if request.method == 'POST':
         db = setup_mongodb_session()
-        review_theme = request.form.getlist("th_themes")
+        review_theme = request.form["th_themes"]
         review_photo = request.files['th_photo']
-
         print("NOT WORKING NOT WORKING NOT WORKING")
         print(review_theme)
-
-
         file_id = secrets.token_hex(16)
         file_name = file_id + ".jpg"
 
@@ -286,12 +310,10 @@ def create_review():
 
         # blob.make_public()
         # url = blob.public_url
-
         review_title = request.form['th_title']
         review_description = request.form['th_review']
         review_rating = request.form['star']
         review_tags = request.form['th_tags']
-
         db.reviews.insert({
             "user_token": review_user_id,
             "title": review_title,
@@ -301,7 +323,6 @@ def create_review():
             "description": review_description,
             "tags": list(review_tags)
         })
-
     return render_template('review_create.html', themes=themes)
 
 @app.route('/review', methods=['GET'])
@@ -324,7 +345,25 @@ def post_review():
 
 @app.route('/reviews/all', methods=['GET'])
 def view_reviews():
-    pass
+    db = setup_mongodb_session()
+    # claims = is_user_authenticated()
+    if not True:
+        return render_template("index.html")
+    else:
+        current_user = db.users.find({"email": "ankit.gupta@austin.utexas.edu"})
+        all_reviews = []
+
+        print(current_user[0]["themes"])
+
+        for theme in current_user[0]["themes"]:
+            for review in db.reviews.find({"theme": theme}):
+                all_reviews.append(review)
+
+
+
+            # db.reviews
+
+        return render_template("feed_reviews.html", themes=current_user[0]["themes"], reviews=all_reviews)
 
 
 if __name__ == '__main__':
