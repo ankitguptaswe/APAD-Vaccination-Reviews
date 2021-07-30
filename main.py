@@ -65,6 +65,34 @@ def fetch_times(email, limit):
 
     return times
 
+def is_user_authenticated():
+    # Verify Firebase auth.
+    id_token = request.cookies.get("token")
+    error_message = None
+    claims = None
+    times = None
+    token_expired = 0
+
+    if id_token:
+        try:
+            # Verify the token against the Firebase Auth API. This example
+            # verifies the token on each page load. For improved performance,
+            # some applications may wish to cache results in an encrypted
+            # session store (see for instance
+            # http://flask.pocoo.org/docs/1.0/quickstart/#sessions).
+            claims = google.oauth2.id_token.verify_firebase_token(
+                id_token, firebase_request_adapter)
+
+        except ValueError as exc:
+            # This will be raised if the token is expired or any other
+            # verification checks fail.
+            error_message = str(exc)
+            token_expired = 1
+
+    if not token_expired and id_token:
+        return claims
+    else:
+        return False
 
 def update_user_theme(user_email, themes):
     db = setup_mongodb_session()
@@ -265,7 +293,7 @@ def create_review():
 
     if request.method == 'POST':
         db = setup_mongodb_session()
-        review_theme = request.form.getlist("th_themes")
+        review_theme = request.form["th_themes"]
         review_photo = request.files['th_photo']
         print("NOT WORKING NOT WORKING NOT WORKING")
         print(review_theme)
@@ -319,8 +347,18 @@ def post_review():
 
 @app.route('/reviews/all', methods=['GET'])
 def view_reviews():
-    pass
-
+    db = setup_mongodb_session()
+    claims = is_user_authenticated()
+    if not claims:
+        return render_template("index.html")
+    else:
+        current_user = db.users.find({"user_token": claims["user_id"]})
+        all_reviews = []
+        for theme in current_user[0]["themes"]:
+            all_reviews.append(db.reviews.find({"theme": theme})[0])
+        print(all_reviews)
+        return render_template("feed_reviews.html", details=all_reviews)
+    
 
 if __name__ == '__main__':
     # This is used when running locally only. When deploying to Google App
