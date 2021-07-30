@@ -1,3 +1,20 @@
+## Web-app tree
+# | /
+# | /login                       ## TODO
+# | /
+# | /preferences
+# | /preferences/set
+# | /
+# | /themes/all
+# | /themes/create
+# | /themes/<theme_name>
+# | /
+# | /reviews/<theme_name>       ## TODO
+# | /reviews/create
+# | /reviews/feed               ## TODO
+# |
+
+# Libraries and modules
 import datetime
 import sqlite3
 from flask import Flask, render_template, request, redirect, url_for
@@ -11,6 +28,10 @@ from werkzeug.utils import secure_filename
 import os
 from PIL import Image
 import base64
+
+# Bucket Google Cloud Storage
+from io import BytesIO
+from google.cloud import storage
 
 app = Flask(__name__)
 firebase_request_adapter = requests.Request()
@@ -64,7 +85,6 @@ def update_user_theme(user_email, themes):
     data = db.users.find({"email": user_email})
     #print(data[0]['themes'])
     #{'_id': ObjectId('6102d061f9a93c37284f6f5e'), 'user_token': 'abc123', 'email': 'asdasd123@gmail.com', 'themes': ['vaccine', 'pharmacy']}
-
 
 @app.route('/')
 def root():
@@ -155,19 +175,33 @@ def create_theme():
     if request.method == 'POST':
         theme_name = request.form['th_name']
         theme_description = request.form['th_description']
-        theme_photo = request.files['photo']
+        theme_photo = request.files.get('photo', False)
 
         #'_id': ObjectId('6102cf1af9a93c37284f6f5c'), 'theme_name': 'vaccine', 'picture': b'NA', 'description': 'take it and enjoy'}
         db = setup_mongodb_session()
 
         collections = db.list_collection_names()
+
+        # db.themes.drop()
+
         data = db.themes.find()
 
         file_id = secrets.token_hex(16)
         file_name = file_id + ".jpg"
 
-        if theme_photo.filename != '':
-            theme_photo.save("static/img/themes/" + file_name)
+        client = storage.Client.from_service_account_json("apad-storage.json", project="APAD-Vaccination")
+
+        # client = storage.Client()
+        bucket = client.get_bucket('apad-storage')
+        filename = "img/themes/" + file_name
+        blob = bucket.blob(filename)
+        blob.upload_from_file(theme_photo.stream, content_type=theme_photo.content_type)
+
+        # blob.make_public()
+        # url = blob.public_url
+
+        # if theme_photo.filename != '':
+        #     theme_photo.save("static/img/themes/" + file_name)
 
         new_theme = {'_id': file_id,
                     'theme_name': theme_name,
@@ -211,52 +245,45 @@ def view_theme(theme_name):
     return render_template("theme.html", details=data[0], details1=all_reviews)
 
 
-@app.route('/review', methods=['GET'])
-def post_review():
+@app.route('/reviews/create', methods=['GET', 'POST'])
+def create_review():
     """
     This function/service is used to post review of a theme item by a user
     :param user_id: unique user id who is posting the review
     :return: None
     """
     db = setup_mongodb_session()
-    themes = db.themes.find()
-    data = [theme for theme in themes]
-    print(data)
-    return render_template("create_review.html", th_themes=data)
+    collections = db.list_collection_names()
+    data = db.themes.find()
 
+    themes = []
 
-@app.route('/post/review', methods=['GET', 'POST'])
-def post_review_to_db():
-    """
-    This function/service is used to post review of a theme item by a user
-    :param user_id: unique user id who is posting the review
-    :return: None
-    """
+    # db.reviews.drop()
+
+    for theme in data:
+        themes.append(theme['theme_name'])
 
     if request.method == 'POST':
         db = setup_mongodb_session()
-        id_token = request.cookies.get("token")
-        error_message = None
-        claims = None
-        times = None
-
-        if id_token:
-            try:
-                claims = google.oauth2.id_token.verify_firebase_token(
-                    id_token, firebase_request_adapter)
-
-            except ValueError as exc:
-                error_message = str(exc)
-
-        review_user_id = id_token
-        review_theme = request.form['th_themes']
+        review_theme = request.form.getlist("th_themes")
         review_photo = request.files['th_photo']
-        filename = secrets.token_hex(16)
-        local_path = os.path.join('/tmp', filename)
-        review_photo.save(local_path)
-        with open(local_path, "rb") as imageFile:
-            image_string = base64.b64encode(imageFile.read())
+        print("NOT WORKING NOT WORKING NOT WORKING")
+        print(review_theme)
+        file_id = secrets.token_hex(16)
+        file_name = file_id + ".jpg"
 
+        client = storage.Client.from_service_account_json("apad-storage.json", project="APAD-Vaccination")
+
+        # client = storage.Client()
+        bucket = client.get_bucket('apad-storage')
+        filename = "img/reviews/" + file_name
+        blob = bucket.blob(filename)
+        blob.upload_from_file(review_photo.stream, content_type=review_photo.content_type)
+
+        review_user_id = "123123"
+
+        # blob.make_public()
+        # url = blob.public_url
         review_title = request.form['th_title']
         review_description = request.form['th_review']
         review_rating = request.form['star']
@@ -266,119 +293,33 @@ def post_review_to_db():
             "title": review_title,
             "theme": review_theme,
             "rating": review_rating,
-            "picture": image_string,
+            "picture": file_name,
             "description": review_description,
             "tags": list(review_tags)
         })
-        return render_template('feed.html')
-    else:
-        return render_template('create_review.html')
+    return render_template('review_create.html', themes=themes)
 
-@app.route('/reports', methods=['GET'])
-def get_reports_from_tags():
+@app.route('/review', methods=['GET'])
+def post_review():
     """
-    This function/service is used to get all reports with matching tags
-    Here, assumption is that tags will be either a single tag or a string of comma separated multiple tags
-    e.g. valid tags i) 'austin' ii) 'cvs,austin,pfizer'
-    :return: string containing all themes
+    This function/service is used to post review of a theme item by a user
+    :param user_id: unique user id who is posting the review
+    :return: None
     """
-    db = setup_session()
+    storage = setup_firebase()
+    db = setup_session(storage)
     cur = db.cursor()
-    tags_filter = request.args.get('tags').split(',')
-    query = "SELECT * from REVIEWS WHERE "
-    for tag_item in tags_filter[:-1]:
-        query = query + "TAGS LIKE \'%" + tag_item + "%\' OR "
-    else:
-        query = query + "TAGS LIKE \'%" + tags_filter[-1] + "%\'"
+    query = "SELECT * from THEMES"
     try:
         cur.execute(query)
     except sqlite3.Error as er:
         print('SQLite error: %s' % (' '.join(er.args)))
     data = cur.fetchall()
-    return str(data)
+    return render_template("create_review.html", th_themes=data)
 
-@app.route('/user/page/set', methods=['GET', 'POST'])
-def set_preferences():
-    # Verify Firebase auth.
-    id_token = request.cookies.get("token")
-    error_message = None
-    claims = None
-    times = None
-    token_expired = 0
-
-    if id_token:
-        try:
-            # Verify the token against the Firebase Auth API. This example
-            # verifies the token on each page load. For improved performance,
-            # some applications may wish to cache results in an encrypted
-            # session store (see for instance
-            # http://flask.pocoo.org/docs/1.0/quickstart/#sessions).
-            claims = google.oauth2.id_token.verify_firebase_token(
-                id_token, firebase_request_adapter)
-
-        except ValueError as exc:
-            # This will be raised if the token is expired or any other
-            # verification checks fail.
-            error_message = str(exc)
-            token_expired = 1
-    if request.method == 'POST':
-        preferences = request.form.getlist("th_preferences")
-        user_id = claims['user_id']
-        user_email = claims['email']
-        file_path = "db/reviews.db"
-        local_path = "/tmp/reviews.db"
-        storage = setup_firebase()
-        db = setup_session(storage)
-        sql = "UPDATE USER SET THEMES=\"" + ",".join(preferences) + "\" WHERE USER_ID=" + user_id
-        task = (",".join(preferences),user_id)
-
-        print(user_id)
-        print(task)
-        print(",".join(preferences))
-        print(sql)
-
-        try:
-            cur = db.cursor()
-            cur.execute(sql, task)
-            db.commit()
-            #push_db(storage, file_path, local_path)
-            push_db(storage, "db/reviews.db", "/tmp/reviews.db")
-            #return view_themes()
-        except:
-            return 'There was an issue upating your task'
-            ### BUG : Fix the insert UPDATE section above
-
-    if not token_expired and id_token:
-        user_id = claims['user_id']
-        user_email = claims['email']
-
-        file_path = "db/reviews.db"
-        local_path = "/tmp/reviews.db"
-        storage = setup_firebase()
-        db = setup_session(storage)
-        cur = db.cursor()
-        query = "SELECT * from USER WHERE USER_ID=\"" + claims['user_id'] + "\""
-
-        try:
-            cur.execute(query)
-        except sqlite3.Error as er:
-            print('SQLite error: %s' % (' '.join(er.args)))
-        data = cur.fetchall()
-
-        storage = setup_firebase()
-        db = setup_session(storage)
-        cur = db.cursor()
-        query = "SELECT * from THEMES"
-        try:
-            cur.execute(query)
-        except sqlite3.Error as er:
-            print('SQLite error: %s' % (' '.join(er.args)))
-        themes = cur.fetchall()
-
-        return render_template('preferences.html', details=claims, error_message=error_message, user=data, themes=themes)
-
-    else:
-        return render_template('index.html')
+@app.route('/reviews/all', methods=['GET'])
+def view_reviews():
+    pass
 
 
 if __name__ == '__main__':
