@@ -348,17 +348,25 @@ def post_review():
 @app.route('/reviews/all', methods=['GET'])
 def view_reviews():
     db = setup_mongodb_session()
-    claims = is_user_authenticated()
-    if not claims:
+    # claims = is_user_authenticated()
+    if not True:
         return render_template("index.html")
     else:
-        current_user = db.users.find({"user_token": claims["user_id"]})
+        current_user = db.users.find({"email": "ankit.gupta@austin.utexas.edu"})
         all_reviews = []
+
+        print(current_user[0]["themes"])
+
         for theme in current_user[0]["themes"]:
-            all_reviews.append(db.reviews.find({"theme": theme})[0])
-        print(all_reviews)
-        return render_template("feed_reviews.html", details=all_reviews)
-    
+            for review in db.reviews.find({"theme": theme}):
+                all_reviews.append(review)
+
+
+
+            # db.reviews
+
+        return render_template("feed_reviews.html", themes=current_user[0]["themes"], reviews=all_reviews)
+
 
 if __name__ == '__main__':
     # This is used when running locally only. When deploying to Google App
