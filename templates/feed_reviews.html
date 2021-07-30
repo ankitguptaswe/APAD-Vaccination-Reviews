@@ -1,0 +1,47 @@
+<html>
+
+ <head>
+   <!-- <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"> -->
+   <link type="text/css" rel="stylesheet" href="../static/style.css">
+ </head>
+
+
+ <body>
+{{details}}
+{% for detail in details %}
+{{detail}}
+{{detail["description"]}}
+{{detail[0]}}
+{{detail.rating}}
+{{detail.tags}}
+
+{% endfor %}
+
+   <table border = 0 style = "width: 100%; position: absolute; top: 0; bottom: 0; left: 0; right: 0; border: 1px solid">
+     <tr>
+       <td><!-- row 1 column 1 --></td>
+       <td><!-- row 1 column 2 --></td>
+       <td><!-- row 1 column 3 --></td>
+     </tr>
+       <tr>
+         <td><!-- row 2 column 1 --></td>
+
+         <td><!-- row 2 column 3 --></td>
+       </tr>
+         <tr>
+             <td><!-- row 3 column 1 --></td>
+             <td height = 20><!-- SPACER --></td>
+             <td><!-- row 3 column 3 --></td>
+         </tr>
+           <tr>
+               <td><!-- row 4 column 1 --></td>
+
+                    
+               <td><!-- row 4 column 3 --></td>
+           </tr>
+
+     </table>
+
+ </body>
+
+</html>
