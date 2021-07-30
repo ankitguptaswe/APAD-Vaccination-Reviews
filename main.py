@@ -303,7 +303,7 @@ def create_review():
                 "rating": review_rating,
                 "picture": file_name,
                 "description": review_description,
-                "tags": list(review_tags)
+                "tags": review_tags
             })
             return view_reviews()
         else:
@@ -328,6 +328,22 @@ def view_reviews():
                 all_reviews.append(review)
 
         return render_template("feed_reviews.html", themes=current_user[0]["themes"], reviews=all_reviews, temp=temp)
+    else:
+        return root()
+
+@app.route('/reviews/search/<string:tag_name>', methods=['GET'])
+def view_reviews_by_tags(tag_name):
+    import re
+    db = setup_mongodb_session()
+    claims = is_user_authenticated()
+    if claims is not False:
+        all_reviews = []
+        for tag in tag_name.split(','):
+            rgx = re.compile('.*'+tag+'.*', re.IGNORECASE)  # compile the regex
+            for review in db.reviews.find({"tags": rgx}):
+                if review not in all_reviews:
+                    all_reviews.append(review)
+        return render_template("feed_reviews_tags.html", reviews=all_reviews)
     else:
         return root()
 
