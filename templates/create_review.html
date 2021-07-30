@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link href="alternatesearchstyle.css" rel="stylesheet" type="text/css"/>
 
+
     <style>
 * {box-sizing: border-box;}
     </style>
@@ -56,6 +57,47 @@
         left: 0;
         color: #FFD700;
     }
+
+
+    .create_review{
+
+    fmargin-top: 0px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+
+    float: center;
+    text-align: center;
+    color: white;
+    font-weight: bold;
+    }
+
+
+    textarea {
+        background-color: #CAF3F0;
+        font-family: Arial;
+    }
+    input {
+        background-color: #CAF3F0;
+        color: black;
+        font-family: Arial;
+    }
+
+    h1{
+        text-align: center;
+        color: white;
+    }
+
+    body{
+
+    background-color: #00cece;
+
+    }
+
+    select{
+    background-color: #CAF3F0;
+    }
+
 </style>
 </head>
 <body>
@@ -64,8 +106,12 @@
 
 <div class="topnav">
   <a class="active" href="#home">Home</a>
-  <a href="#about">About</a>
-  <a href="#contact">Contact</a>
+  <a href="#Create Review">Create Review</a>
+  <a href="#Feed">Feed</a>
+  <a href="#Preferences">Preferences</a>
+  <a href="#Create Theme">Create Theme</a>
+  <a href="#Themes">Theme</a>
+  <a href="#Create Theme">Create Theme</a>
   <div class="search-container">
     <form action="/action_page.php">
       <input type="text" placeholder="Search.." name="search">
@@ -75,12 +121,18 @@
 </div>
 
 <div style="padding-left:16px">
-  <h2>Responsive Search Bar</h2>
-  <p>Random Text.</p>
-  <p>Random Text.</p>
 </div>
 
+<h1>
 
+    CREATE A REVIEW
+
+</h1>
+
+<br>
+<br>
+
+<div class = "create_review">
   <form id="review-form" method="POST" action="/post/review" enctype="multipart/form-data">
      <b>Themes:</b><br>
      <select multiple size="10" id="th_themes" name="th_themes">
@@ -91,9 +143,9 @@
          {% endfor %}
     </select>
       <br>
-     Title: <textarea id="th_title" name="th_title" rows="4" cols="50">Insert your review's title</textarea>
+     Title: <textarea id="th_title" name="th_title" rows="4" cols="50" placeholder="Insert your review's title"></textarea>
      <br>
-     Review: <textarea id="th_review" name="th_review" rows="4" cols="50">Insert your review</textarea>
+     Review: <textarea id="th_review" name="th_review" rows="4" cols="50" placeholder="Insert your review"></textarea>
       <br>
     <div class="rating" id="th_rating" name="th_rating">
             <input id="star5" name="star" type="radio" value="5" class="radio-btn hide" />
@@ -111,7 +163,7 @@
      <br>Upload a photo:
      <p><input type="file" name="th_photo" id="th_photo" onchange="loadFile(event)"></p>
       <br>
-     Tags: <textarea id="th_tags" name="th_tags" rows="4" cols="50">Insert tags for this review</textarea>
+     Tags: <textarea id="th_tags" name="th_tags" rows="4" cols="50" placeholder="Insert tags for this review"></textarea>
      <p><input type="submit" value="Submit"></p>
    </form>
 
@@ -124,6 +176,8 @@
        }
      };
    </script>
+</div>
+
 
 
 
