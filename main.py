@@ -311,38 +311,50 @@ def create_review():
     else:
         return root()
 
-@app.route('/reviews/all', methods=['GET'])
+@app.route('/reviews/all', methods=['GET', 'POST'])
 def view_reviews():
     db = setup_mongodb_session()
     claims = is_user_authenticated()
     if claims is not False:
-        current_user = db.users.find({"user_token": claims['user_id']})
-        all_reviews = []
-        temp = True
+        if request.method == 'POST':
+            return view_reviews_by_tags(request.form["search"])
+        else:
+            current_user = db.users.find({"user_token": claims['user_id']})
+            all_reviews = []
+            temp = True
 
-        if current_user[0]["themes"] == []:
-            temp = False
+            if current_user[0]["themes"] == []:
+                temp = False
 
-        for theme in current_user[0]["themes"]:
-            for review in db.reviews.find({"theme": theme}):
-                all_reviews.append(review)
+            for theme in current_user[0]["themes"]:
+                for review in db.reviews.find({"theme": theme}):
+                    all_reviews.append(review)
 
-        return render_template("feed_reviews.html", themes=current_user[0]["themes"], reviews=all_reviews, temp=temp)
+            return render_template("feed_reviews.html", themes=current_user[0]["themes"], reviews=all_reviews, temp=temp)
     else:
         return root()
 
-@app.route('/reviews/search/<string:tag_name>', methods=['GET'])
+@app.route('/reviews/tags/<string:tag_name>', methods=['GET'])
 def view_reviews_by_tags(tag_name):
     import re
     db = setup_mongodb_session()
     claims = is_user_authenticated()
     if claims is not False:
         all_reviews = []
+        curr_user = db.users.find({"user_token": claims["user_id"]})
+        sub_themes = curr_user[0]["themes"]
         for tag in tag_name.split(','):
             rgx = re.compile('.*'+tag+'.*', re.IGNORECASE)  # compile the regex
-            for review in db.reviews.find({"tags": rgx}):
-                if review not in all_reviews:
-                    all_reviews.append(review)
+    
+        search_request = {
+            '$and': [
+                {'tags': {'$regex': rgx}},
+                {'theme': {'$in' : sub_themes}}
+            ]
+        }
+        for review in db.reviews.find(search_request):
+            if review not in all_reviews:
+                all_reviews.append(review)
         return render_template("feed_reviews_tags.html", reviews=all_reviews)
     else:
         return root()
