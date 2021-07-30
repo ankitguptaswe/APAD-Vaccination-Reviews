@@ -10,9 +10,10 @@
   {% if details['themes'] %}
   <h2>You have set themes preferences, you are good</h2>
   {% else %}
-  <h2>You You don't have any preferences set</h2>
+  <h2>You don't have any preferences set</h2>
   {% endif  %}
   <br><br>
+  <a href="{{ url_for('view_reviews') }}">Go to your Home Feed</a><br>
   <a href="{{ url_for('preferences_set') }}">Setup new preferences</a><br>
   <a href="{{ url_for('create_theme') }}">Create new theme</a>
 

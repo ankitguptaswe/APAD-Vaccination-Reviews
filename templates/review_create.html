@@ -52,14 +52,14 @@
 </head>
 <body>
   <h1>Create a review</h1>
-  <form id="review-form" method="POST" action="" enctype="multipart/form-data">
-     <b>Themes:</b><br>
-     <select size="10" id="th_themes" name="th_themes">
-         {% for theme in themes %}
-         <option value="{{theme.theme_name}}">
+    <form method="POST" action="" enctype="multipart/form-data">
+    <h1>Themes available for you to choose</h1>
+    <select size="10" id="th_preferences" name="th_preferences">
+    {% for theme in themes %}
+         <option value="{{theme}}">
             {{theme}}
          </option>
-         {% endfor %}
+    {% endfor %}
     </select>
       <br><br>
      <b>Title:</b><br><textarea id="th_title" name="th_title" rows="4" cols="50"></textarea>
@@ -84,7 +84,8 @@
      <input type="file" name="th_photo" id="th_photo" onchange="loadFile(event)">
       <br><br>
      <b>Tags:</b><br><textarea id="th_tags" name="th_tags" rows="4" cols="50"></textarea>
-     <br><br><input type="submit" value="Submit">
+     <br><br>
+     <p><input type="submit" value="Submit"></p>
    </form>
 <br><br>
    <a href="{{ url_for('view_themes') }}">See all themes</a><br>

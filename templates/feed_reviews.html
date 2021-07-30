@@ -7,6 +7,10 @@
 
 
  <body>
+{% if temp == False %}
+<h1>You have not selected any themes. Select a theme to see reviews</h1>
+{% endif %}
+
 {% for theme in themes%}
 <h1>Reviews associated to: {{theme}}</h1>
 <table border = 0 style = "width: 100%; top: 0; bottom: 0; left: 0; right: 0; border: 0px solid">
@@ -94,6 +98,8 @@
 
   </table>
 {%endfor%}
+  <a href="../preferences/set">Update theme preferences</a><br>
+  <br>
   <a href="{{ url_for('view_themes') }}">See all themes</a><br>
   <a href="{{ url_for('create_review') }}">Create a review</a>
  </body>

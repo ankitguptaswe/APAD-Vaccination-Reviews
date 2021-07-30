@@ -96,14 +96,8 @@ def is_user_authenticated():
 
 def update_user_theme(user_email, themes):
     db = setup_mongodb_session()
-    #print(user_email)
-    #print("asdasd123@gmail.com")
-    #data = db.users.find()
 
     data = db.users.find({"email": user_email})
-    #print(data[0]['themes'])
-
-    #themes = ['blabla1', 'blabla2']
 
     query = { "email": user_email }
     new_preferences = { "$set": { "themes": themes } }
@@ -111,35 +105,13 @@ def update_user_theme(user_email, themes):
     db.users.update_one(query, new_preferences)
 
     data = db.users.find({"email": user_email})
-    #print(data[0]['themes'])
-    #{'_id': ObjectId('6102d061f9a93c37284f6f5e'), 'user_token': 'abc123', 'email': 'asdasd123@gmail.com', 'themes': ['vaccine', 'pharmacy']}
 
 @app.route('/')
 def root():
-    # Verify Firebase auth.
-    id_token = request.cookies.get("token")
-    error_message = None
-    claims = None
-    times = None
-    token_expired = 0
+    db = setup_mongodb_session()
+    claims = is_user_authenticated()
 
-    if id_token:
-        try:
-            # Verify the token against the Firebase Auth API. This example
-            # verifies the token on each page load. For improved performance,
-            # some applications may wish to cache results in an encrypted
-            # session store (see for instance
-            # http://flask.pocoo.org/docs/1.0/quickstart/#sessions).
-            claims = google.oauth2.id_token.verify_firebase_token(
-                id_token, firebase_request_adapter)
-
-        except ValueError as exc:
-            # This will be raised if the token is expired or any other
-            # verification checks fail.
-            error_message = str(exc)
-            token_expired = 1
-
-    if not token_expired and id_token:
+    if claims is not False:
 
         user_id = claims['user_id']
         user_email = claims['email']
@@ -156,47 +128,56 @@ def root():
 
         curr = db.users.find({"user_token": user_id})
         data = [cur for cur in curr]
-        print(data[0])
-        return render_template('index.html', user_data=claims, error_message=error_message, user=data[0])
+        return render_template('index.html', user_data=claims, error_message=None, user=data[0])
     else:
         return render_template('index.html')
 
 @app.route('/preferences/set', methods=['GET', 'POST'])
 def preferences_set():
     db = setup_mongodb_session()
-    collections = db.list_collection_names()
-    data = db.themes.find()
+    claims = is_user_authenticated()
+    if claims is not False:
+        current_user = db.users.find({"user_token": claims['user_id']})
+    
+        collections = db.list_collection_names()
+        data = db.themes.find()
 
-    user_id = "abc123"
-    all_themes = []
+        email = claims['email']
+        all_themes = []
 
-    for theme in data:
-        all_themes.append(theme['theme_name'])
+        for theme in data:
+            all_themes.append(theme['theme_name'])
 
-    details = {'email':"asdasd123@gmail.com", 'themes':["asdasd", "dsadsa"]}
+        details = {'email':email, 'themes':current_user[0]['themes']}
 
-    if request.method == 'POST':
-        new_preferences = request.form.getlist("th_preferences")
-        update_user_theme(details['email'], new_preferences)
+        if request.method == 'POST':
+            new_preferences = request.form.getlist("th_preferences")
+            update_user_theme(details['email'], new_preferences)
+            return preferences_show()
 
-    return render_template("preferences_set.html", details=details, all_themes=all_themes)
+        return render_template("preferences_set.html", details=details, all_themes=all_themes)
+    else:
+        return root ()
 
 @app.route('/preferences', methods=['GET', 'POST'])
 def preferences_show():
     db = setup_mongodb_session()
+    claims = is_user_authenticated()
+    if claims is not False:
+        current_user = db.users.find({"user_token": claims['user_id']})
+        collections = db.list_collection_names()
+        data = db.users.find()
+        user_id = claims['user_id']
 
-    collections = db.list_collection_names()
-    data = db.users.find()
-
-    user_id = "abc123"
-
-    #find if user_id is present in users table
-    if db.users.find({"user_token": user_id }).count() == 0:
-        # Push user_id and user_email to db
-        return redirect(url_for("preferences_set"))
+        #find if user_id is present in users table
+        if db.users.find({"user_token": user_id }).count() == 0:
+            # Push user_id and user_email to db
+            return redirect(url_for("preferences_set"))
+        else:
+            details = db.users.find({"user_token": user_id })[0]
+            return render_template("preferences.html", details=details)
     else:
-        details = db.users.find({"user_token": user_id })[0]
-        return render_template("preferences.html", details=details)
+        return root ()
 
 @app.route('/themes/create', methods=['GET', 'POST'])
 def create_theme():
@@ -261,8 +242,6 @@ def view_theme(theme_name):
 
     all_reviews = []
 
-    print(theme_name)
-
     data = db.themes.find({"theme_name": theme_name})
     data1 = db.reviews.find({"theme": theme_name})
 
@@ -283,89 +262,74 @@ def create_review():
     db = setup_mongodb_session()
     collections = db.list_collection_names()
     data = db.themes.find()
+    claims = is_user_authenticated()
+    if claims is not False:
+        current_user = db.users.find({"user_token": claims['user_id']})
+        themes = []
 
-    themes = []
+        # db.reviews.drop()
 
-    # db.reviews.drop()
+        for theme in data:
+            themes.append(theme['theme_name'])
 
-    for theme in data:
-        themes.append(theme['theme_name'])
+        if request.method == 'POST':
+            db = setup_mongodb_session()
+            review_theme = request.form["th_preferences"]
+            review_photo = request.files['th_photo']
 
-    if request.method == 'POST':
-        db = setup_mongodb_session()
-        review_theme = request.form["th_themes"]
-        review_photo = request.files['th_photo']
-        print("NOT WORKING NOT WORKING NOT WORKING")
-        print(review_theme)
-        file_id = secrets.token_hex(16)
-        file_name = file_id + ".jpg"
+            file_id = secrets.token_hex(16)
+            file_name = file_id + ".jpg"
 
-        client = storage.Client.from_service_account_json("apad-storage.json", project="APAD-Vaccination")
+            client = storage.Client.from_service_account_json("apad-storage.json", project="APAD-Vaccination")
 
-        # client = storage.Client()
-        bucket = client.get_bucket('apad-storage')
-        filename = "img/reviews/" + file_name
-        blob = bucket.blob(filename)
-        blob.upload_from_file(review_photo.stream, content_type=review_photo.content_type)
+            # client = storage.Client()
+            bucket = client.get_bucket('apad-storage')
+            filename = "img/reviews/" + file_name
+            blob = bucket.blob(filename)
+            blob.upload_from_file(review_photo.stream, content_type=review_photo.content_type)
 
-        review_user_id = "123123"
+            review_user_id = claims['user_id']
 
-        # blob.make_public()
-        # url = blob.public_url
-        review_title = request.form['th_title']
-        review_description = request.form['th_review']
-        review_rating = request.form['star']
-        review_tags = request.form['th_tags']
-        db.reviews.insert({
-            "user_token": review_user_id,
-            "title": review_title,
-            "theme": review_theme,
-            "rating": review_rating,
-            "picture": file_name,
-            "description": review_description,
-            "tags": list(review_tags)
-        })
-    return render_template('review_create.html', themes=themes)
-
-@app.route('/review', methods=['GET'])
-def post_review():
-    """
-    This function/service is used to post review of a theme item by a user
-    :param user_id: unique user id who is posting the review
-    :return: None
-    """
-    storage = setup_firebase()
-    db = setup_session(storage)
-    cur = db.cursor()
-    query = "SELECT * from THEMES"
-    try:
-        cur.execute(query)
-    except sqlite3.Error as er:
-        print('SQLite error: %s' % (' '.join(er.args)))
-    data = cur.fetchall()
-    return render_template("create_review.html", th_themes=data)
+            # blob.make_public()
+            # url = blob.public_url
+            review_title = request.form['th_title']
+            review_description = request.form['th_review']
+            review_rating = request.form['star']
+            review_tags = request.form['th_tags']
+            db.reviews.insert({
+                "user_token": review_user_id,
+                "title": review_title,
+                "theme": review_theme,
+                "rating": review_rating,
+                "picture": file_name,
+                "description": review_description,
+                "tags": list(review_tags)
+            })
+            return view_reviews()
+        else:
+            return render_template('review_create.html', themes=themes)
+    else:
+        return root()
 
 @app.route('/reviews/all', methods=['GET'])
 def view_reviews():
     db = setup_mongodb_session()
-    # claims = is_user_authenticated()
-    if not True:
-        return render_template("index.html")
-    else:
-        current_user = db.users.find({"email": "ankit.gupta@austin.utexas.edu"})
+    claims = is_user_authenticated()
+    if claims is not False:
+        current_user = db.users.find({"user_token": claims['user_id']})
         all_reviews = []
+        temp = True
 
-        print(current_user[0]["themes"])
+        if current_user[0]["themes"] == []:
+            temp = False
 
         for theme in current_user[0]["themes"]:
             for review in db.reviews.find({"theme": theme}):
                 all_reviews.append(review)
 
-
-
-            # db.reviews
-
-        return render_template("feed_reviews.html", themes=current_user[0]["themes"], reviews=all_reviews)
+        return render_template("feed_reviews.html", themes=current_user[0]["themes"], reviews=all_reviews, temp=temp)
+    else:
+        return root()
 
 
 if __name__ == '__main__':
