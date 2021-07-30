@@ -26,6 +26,8 @@ import pymongo
 import urllib.parse
 from werkzeug.utils import secure_filename
 import os
+from PIL import Image
+import base64
 
 # Bucket Google Cloud Storage
 from io import BytesIO
@@ -62,6 +64,7 @@ def fetch_times(email, limit):
     times = query.fetch(limit=limit)
 
     return times
+
 
 def update_user_theme(user_email, themes):
     db = setup_mongodb_session()
@@ -127,7 +130,6 @@ def root():
         data = [cur for cur in curr]
         print(data[0])
         return render_template('index.html', user_data=claims, error_message=error_message, user=data[0])
-
     else:
         return render_template('index.html')
 
@@ -236,13 +238,12 @@ def view_theme(theme_name):
     data = db.themes.find({"theme_name": theme_name})
     data1 = db.reviews.find({"theme": theme_name})
 
-    print(data[0])
-
     for i in data1:
         all_reviews.append(i)
 
 
     return render_template("theme.html", details=data[0], details1=all_reviews)
+
 
 @app.route('/reviews/create', methods=['GET', 'POST'])
 def create_review():
@@ -266,11 +267,8 @@ def create_review():
         db = setup_mongodb_session()
         review_theme = request.form.getlist("th_themes")
         review_photo = request.files['th_photo']
-
         print("NOT WORKING NOT WORKING NOT WORKING")
         print(review_theme)
-
-
         file_id = secrets.token_hex(16)
         file_name = file_id + ".jpg"
 
@@ -286,12 +284,10 @@ def create_review():
 
         # blob.make_public()
         # url = blob.public_url
-
         review_title = request.form['th_title']
         review_description = request.form['th_review']
         review_rating = request.form['star']
         review_tags = request.form['th_tags']
-
         db.reviews.insert({
             "user_token": review_user_id,
             "title": review_title,
@@ -301,7 +297,6 @@ def create_review():
             "description": review_description,
             "tags": list(review_tags)
         })
-
     return render_template('review_create.html', themes=themes)
 
 @app.route('/review', methods=['GET'])

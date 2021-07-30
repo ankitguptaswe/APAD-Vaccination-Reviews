@@ -30,13 +30,14 @@
 
     <script>
     var firebaseConfig = {
-        apiKey: "AIzaSyAZh8jqAOWD42xPU9-EBIXXytNvNrtuUBE",
-        authDomain: "vaccination-reviews-apad.firebaseapp.com",
-        projectId: "vaccination-reviews-apad",
-        storageBucket: "vaccination-reviews-apad.appspot.com",
-        messagingSenderId: "831689838983",
-        appId: "1:831689838983:web:879a4fc40ea65457ed8322",
-        measurementId: "G-YE8X2V2X6R"
+        apiKey: "AIzaSyA2ADUDmrtKRz-_F_XKBTmRZ9PSt8zOrcU",
+        authDomain: "apad-vaccine-reviews.firebaseapp.com",
+        projectId: "apad-vaccine-reviews",
+        storageBucket: "apad-vaccine-reviews.appspot.com",
+        messagingSenderId: "1006703432374",
+        appId: "1:1006703432374:web:e2d977e1aba5ad2169cc17",
+        measurementId: "G-X0PFVK1J5T",
+        serviceAccount: "keys/apad-vaccine-reviews-4d3d473a879f.json"
     };
     firebase.initializeApp(firebaseConfig);
     firebase.analytics();
@@ -52,9 +53,9 @@
     <h2>Login info:</h2>
     {% if user_data %}
         <dl>
-        <dt><b>User ID</b></dt><dd>{{ user_data.user_id }}</dd>
-        <dt><b>User Email</b></dt><dd>{{ user_data.email }}</dd>
-        <dt><b>Your prefered themes are: </b></dt><dd>{{user[0][2]}}</dd>
+        <dt><b>User ID</b></dt><dd>{{ user.user_token }}</dd>
+        <dt><b>User Email</b></dt><dd>{{ user.email }}</dd>
+        <dt><b>Your prefered themes are: </b></dt><dd>{{ user.themes }}</dd>
         </dl>
         <br><br><br><br>
         <h1><a href="../user/page/set">Setup preferences</a></h1>
