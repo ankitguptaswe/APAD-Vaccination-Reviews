@@ -61,7 +61,7 @@
 
     .create_review{
 
-    fmargin-top: 0px;
+    margin-top: 0px;
     margin-right: 0px;
     margin-bottom: 0px;
     margin-left: 0px;
@@ -98,6 +98,7 @@
     background-color: #CAF3F0;
     }
 
+
 </style>
 </head>
 <body>
@@ -106,12 +107,12 @@
 
 <div class="topnav">
   <a class="active" href="#home">Home</a>
-  <a href="#Create Review">Create Review</a>
   <a href="#Feed">Feed</a>
-  <a href="#Preferences">Preferences</a>
-  <a href="#Create Theme">Create Theme</a>
+  <a href="#Create Theme">Theme</a>
+  <a href="#See All Themes">See All Themes</a>
   <a href="#Themes">Theme</a>
-  <a href="#Create Theme">Create Theme</a>
+  <a href="#Preferences">Preferences</a>
+  <a href="#Set Preferences">Set Preferences</a>
   <div class="search-container">
     <form action="/action_page.php">
       <input type="text" placeholder="Search.." name="search">
@@ -143,7 +144,7 @@
          {% endfor %}
     </select>
       <br>
-     Title: <textarea id="th_title" name="th_title" rows="4" cols="50" placeholder="Insert your review's title"></textarea>
+     <div class= "insert_title ">  Title: <textarea id="th_title" name="th_title" rows="4" cols="50" placeholder="Insert your review's title"></textarea> </div>
      <br>
      Review: <textarea id="th_review" name="th_review" rows="4" cols="50" placeholder="Insert your review"></textarea>
       <br>
