@@ -4,8 +4,6 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link href="alternatesearchstyle.css" rel="stylesheet" type="text/css"/>
-
-
     <style>
 * {box-sizing: border-box;}
     </style>
@@ -57,53 +55,9 @@
         left: 0;
         color: #FFD700;
     }
-
-
-    .create_review{
-
-    margin-top: 0px;
-    margin-right: 0px;
-    margin-bottom: 0px;
-    margin-left: 0px;
-
-    float: center;
-    text-align: center;
-    color: white;
-    font-weight: bold;
-    }
-
-
-    textarea {
-        background-color: #CAF3F0;
-        font-family: Arial;
-    }
-    input {
-        background-color: #CAF3F0;
-        color: black;
-        font-family: Arial;
-    }
-
-    h1{
-        text-align: center;
-        color: white;
-    }
-
-    body{
-
-    background-color: #00cece;
-
-    }
-
-    select{
-    background-color: #CAF3F0;
-    }
-
-
 </style>
 </head>
 <body>
-
-
 
 <div class="topnav">
   <a class="active" href="#home">Home</a>
@@ -121,33 +75,23 @@
   </div>
 </div>
 
-<div style="padding-left:16px">
-</div>
-
-<h1>
-
-    CREATE A REVIEW
-
-</h1>
-
-<br>
-<br>
-
-<div class = "create_review">
-  <form id="review-form" method="POST" action="/post/review" enctype="multipart/form-data">
-     <b>Themes:</b><br>
-     <select multiple size="10" id="th_themes" name="th_themes">
-         {% for theme in th_themes %}
-         <option value="{{theme.theme_name}}">
-            {{theme.theme_name}}
+<div style="padding-left:650px">
+  <h1>Create a review</h1>
+    <form method="POST" action="" enctype="multipart/form-data">
+    <h1>Themes available for you to choose:</h1>
+    <select size="10" id="th_preferences" name="th_preferences">
+    {% for theme in themes %}
+         <option value="{{theme}}">
+            {{theme}}
          </option>
-         {% endfor %}
+    {% endfor %}
     </select>
-      <br>
-     <div class= "insert_title ">  Title: <textarea id="th_title" name="th_title" rows="4" cols="50" placeholder="Insert your review's title"></textarea> </div>
-     <br>
-     Review: <textarea id="th_review" name="th_review" rows="4" cols="50" placeholder="Insert your review"></textarea>
-      <br>
+      <br><br>
+     <b>Title:</b><br><textarea id="th_title" name="th_title" rows="4" cols="50"></textarea>
+     <br><br>
+     <b>Review:</b><br><textarea id="th_review" name="th_review" rows="4" cols="50"></textarea>
+      <br><br>
+      <b>Rating:</b><br>
     <div class="rating" id="th_rating" name="th_rating">
             <input id="star5" name="star" type="radio" value="5" class="radio-btn hide" />
             <label for="star5" >☆</label>
@@ -160,27 +104,14 @@
             <input id="star1" name="star" type="radio" value="1" class="radio-btn hide" />
             <label for="star1" >☆</label>
             <div class="clear"></div>
-        </div>
-     <br>Upload a photo:
-     <p><input type="file" name="th_photo" id="th_photo" onchange="loadFile(event)"></p>
-      <br>
-     Tags: <textarea id="th_tags" name="th_tags" rows="4" cols="50" placeholder="Insert tags for this review"></textarea>
+        </div><br>
+     <br><b>Upload a photo:</b><br><br>
+     <input type="file" name="th_photo" id="th_photo" onchange="loadFile(event)">
+      <br><br>
+     <b>Tags:</b><br><textarea id="th_tags" name="th_tags" rows="4" cols="50"></textarea>
+     <br><br>
      <p><input type="submit" value="Submit"></p>
    </form>
-
-   <script>
-     var loadFile = function(event) {
-       var output = document.getElementById('output');
-       output.src = URL.createObjectURL(event.target.files[0]);
-       output.onload = function() {
-         URL.revokeObjectURL(output.src) // free memory
-       }
-     };
-   </script>
+<br><br>
+   <a href="{{ url_for('view_themes') }}">See all themes</a><br>
 </div>
-
-
-
-
- </body>
-</html>

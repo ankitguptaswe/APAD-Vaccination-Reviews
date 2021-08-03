@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
 <head>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -7,7 +7,8 @@
 * {box-sizing: border-box;}
     </style>
 </head>
-<body style ="background-color: #00cece;">
+
+<body>
 
 <div class="topnav">
   <a class="active" href="#home">Home</a>
@@ -25,11 +26,24 @@
   </div>
 </div>
 
-<div style="padding-left:16px">
-  <h2>Responsive Search Bar</h2>
-  <p>Random Text.</p>
-  <p>Random Text.</p>
+<div style="padding-left:650px">
+  <h1>Create a new theme:</h1>
+  <form method="POST" action="" enctype="multipart/form-data">
+     Theme name:
+     <br><input type="text" name = "th_name" id="th_name">
+     <br><br>
+     Theme description:
+     <br><textarea id="th_description" name="th_description" rows="1" cols="50"></textarea>
+     <br><br>
+     Upload a photo:
+     <br><input type="file" name="photo" id="photo" onchange="loadFile(event)">
+     <br><br><br><input type="submit" value="Save">
+   </form>
+   <br><br>
+   <a href="{{ url_for('preferences_show') }}">Back to preferences</a><br>
+   <a href="{{ url_for('view_themes') }}">See all themes</a>
 </div>
 
-</body>
+
+ </body>
 </html>

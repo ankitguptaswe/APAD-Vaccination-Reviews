@@ -3,6 +3,7 @@
   transition: 0.3s;
   width: 500;
   height: 170;
+
 }
 
 .card_theme {
@@ -23,3 +24,5 @@
 .container {
   padding: 2px 16px;
 }
+
+

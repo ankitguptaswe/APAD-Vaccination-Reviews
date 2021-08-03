@@ -3,12 +3,11 @@
  <head>
    <!-- <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"> -->
    <link type="text/css" rel="stylesheet" href="../static/style.css">
-       <link type="text/css" rel="stylesheet" href="../static/style.css">
-     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<link href="alternatesearchstyle.css" rel="stylesheet" type="text/css"/>
-    <style>
-* {box-sizing: border-box;}
-    </style>
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+   <link href="alternatesearchstyle.css" rel="stylesheet" type="text/css"/>
+
+
+
  </head>
 
 
@@ -23,14 +22,21 @@
   <a href="#Preferences">Preferences</a>
   <a href="#Set Preferences">Set Preferences</a>
   <div class="search-container">
-    <form action="/action_page.php">
-      <input type="text" placeholder="Search.." name="search">
+    <form id="search" method="POST">
+      <input type="text" placeholder="Provide tags to filter reviews" name="search">
+      <p1>Please separate tags by comma</p1>
       <button type="submit"><i class="fa fa-search"></i></button>
     </form>
   </div>
 </div>
 
+ <br>
+{% if temp == False %}
+<h1>You have not selected any themes. Select a theme to see reviews</h1>
+{% endif %}
 
+{% for theme in themes%}
+<h1>Reviews associated to: {{theme}}</h1>
 <table border = 0 style = "width: 100%; top: 0; bottom: 0; left: 0; right: 0; border: 0px solid">
 <br>
   <tr>
@@ -40,22 +46,14 @@
   </tr>
     <tr>
       <td><!-- row 2 column 1 --></td>
-
-      <!-- THE CARD STARTS HERE -->
-
-
-
-<!-- end loop -->
-
-<h1>All reviews associated with the theme: {{details['theme_name']}}</h1>
-
-{% for review in details1 %}
+{% for post in reviews %}
+{% if post['theme'] == theme %}
 <!-- new loop-->
            <td class="card">
              <table border = 0 style = "width: 100%; height: 100%; top: 0; bottom: 0; left: 0; right: 0;">
                <tr>
-                 <td colspan = 2 rowspan = 3><center><img src="https://storage.googleapis.com/apad-storage/img/reviews/{{ review['picture'] }}" alt="Red dot"  width="150" height="150"/></center></td>
-                 <td><b>{{review['title']}}</b></td>
+                 <td colspan = 2 rowspan = 3><center><img src="https://storage.googleapis.com/apad-storage/img/reviews/{{post['picture']}}" alt="Red dot"  width="150" height="150"/></center></td>
+                 <td><b>{{post['title']}}</b></td>
                </tr>
                  <tr>
 
@@ -68,36 +66,36 @@
 'description': 'loved it',
 'tags': ['pfizer', 'vaccine']} -->
 
-                   <td>Description: {{review['description']}}</td>
+                   <td>Description: {{post['description']}}</td>
                  </tr>
                    <tr>
                      <td>
                        <div style="text-align: right">
-                         {% if review['rating'] == '1' %}
+                         {% if post['rating'] == '1' %}
                          <img src ="../static/img/star-filled.png" width="15" height="15">
                            <img src ="../static/img/star-empty.png" width="15" height="15">
                              <img src ="../static/img/star-empty.png" width="15" height="15">
                                <img src ="../static/img/star-empty.png" width="15" height="15">
                                  <img src ="../static/img/star-empty.png" width="15" height="15">
-                          {% elif review['rating'] == '2'%}
+                          {% elif post['rating'] == '2'%}
                           <img src ="../static/img/star-filled.png" width="15" height="15">
                           <img src ="../static/img/star-filled.png" width="15" height="15">
                               <img src ="../static/img/star-empty.png" width="15" height="15">
                                 <img src ="../static/img/star-empty.png" width="15" height="15">
                                   <img src ="../static/img/star-empty.png" width="15" height="15">
-                                    {% elif review['rating'] == '3' %}
+                                    {% elif post['rating'] == '3' %}
                                     <img src ="../static/img/star-filled.png" width="15" height="15">
                                     <img src ="../static/img/star-filled.png" width="15" height="15">
                                     <img src ="../static/img/star-filled.png" width="15" height="15">
                                           <img src ="../static/img/star-empty.png" width="15" height="15">
                                             <img src ="../static/img/star-empty.png" width="15" height="15">
-                                     {% elif review['rating'] == '4'%}
+                                     {% elif post['rating'] == '4'%}
                                      <img src ="../static/img/star-filled.png" width="15" height="15">
                                      <img src ="../static/img/star-filled.png" width="15" height="15">
                                      <img src ="../static/img/star-filled.png" width="15" height="15">
                                      <img src ="../static/img/star-filled.png" width="15" height="15">
                                              <img src ="../static/img/star-empty.png" width="15" height="15">
-                                               {% elif review['rating'] == '5' %}
+                                               {% elif post['rating'] == '5' %}
                                                <img src ="../static/img/star-filled.png" width="15" height="15">
                                                <img src ="../static/img/star-filled.png" width="15" height="15">
                                                <img src ="../static/img/star-filled.png" width="15" height="15">
@@ -107,11 +105,12 @@
                         </div>
                    </tr>
                    <tr>
-                     <td><div style="text-align: right"><b>Tags: </b><i>{{review['tags']}}</i></div></td>
+                     <td><div style="text-align: right"><b>Tags: </b><i>{{post['tags']}}</i></div></td>
                    </tr>
                </table>
            </td>
 
+{% endif %}
 {% endfor %}
 
 <!-- end loop-->
@@ -122,7 +121,9 @@
         </tr>
 
   </table>
-
+{%endfor%}
+  <a href="../preferences/set">Update theme preferences</a><br>
+  <br>
   <a href="{{ url_for('view_themes') }}">See all themes</a><br>
   <a href="{{ url_for('create_review') }}">Create a review</a>
  </body>

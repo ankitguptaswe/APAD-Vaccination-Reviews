@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "apad-vaccination",
+  "private_key_id": "6a2b0569b6c665daaf48df08e18e1002c8d07cd0",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCuqG85ins8/Z67\nBWVOf30iYbDha0vNcrJsb+tuXxRzsOXZVIA7xhM8jH6fYPRGOwvmNuGrmcvjDRYD\n17dWdNWoJkWt/DuOSdP3+7lR+D9L5FBCTW9DPSOkMt0FJEG3dNr7VU481vr3G4bv\nR7o+MyW+9gvjrPRh5UzF0+Jg8l37BcKYk84KCdBLLqXftcQJY6wuDQZDpYXJHoXW\nYOSatFjZDM2zWO+H2Qz5GlKLyiPER0Z+ZkIh0f8jc7rxlclliPc5PbAOmViaBtv4\nSD+CKdAJsuXvo510J+YUQuAZAxwKrAoqjA7yXAejzCeJfAAmj8zCtM8587KtHWIJ\n6p5PFDfHAgMBAAECggEAAXjL4fcdwjj7A+rytlIdrW4wHM2FASyd6y53rNFBmmif\nqXVxzykEbXDDO6+bJoiTbRsdZnwSg3qmYUJxJwLdvyKJInLi+hDEzgFY2s7+vhHN\nu3j3ZCoPvxMuyK6uSsvoFKVvvaNzDDXHUHw+DjOvkVTSRQUXm4kqEy0CxyCmIae7\nuFNE/8TaOIcCOgzwz7ZBsFAffGfCPu5kiRfKB2ObnDs+t7TiKAngxGIuNn5C9/Wp\nhp1lPoPLGSSJT/aFNVDsCbnmgQxvYgpK4uSTXBhEnzPMsPogEvyvwWpnlGsGHveX\n6WBRoyaFIkCFLEuE2EdXZg9ZWvWxiUxhgzjT7O1mdQKBgQDi62FvBGY1vu5zu3oQ\n6Cl2fQCrGO89t2o+mGuVAi5Ip6KEK08aCvsIUcdOeE8AQiVHJihT6h3hIHrjX5SL\nfxorsgejsxs5e3cS5EA6jsuuXdq5BDCr/IefSe9SZweKXarfoMK4hAHF8juXUt0Q\nQlS0czjFtaSksGCTdnd2gxhx1QKBgQDFCn5pbbmuIsQW7HzsfLFw/aRjNM5ZcTcd\n5WrHPHrUlgIpCbXIOD6Q85L2bhUwus9RoWCoJzdXcdIftpKkDi+4LcEbrCjk2EQO\nunwW9sjwKqA4yfkByV32q9EyMkR6QInb9vpwxwzKMcvssZkoNc3crfk70HZfVwpV\nSVHuHMg1KwKBgEXD4lfUfWwmwH8ac6QBDMZeFjeEWgGag3KtP943Jm22BFQoUJCM\nMbPUGLe6a2eD7pwaUinCf984Mi/3sd7VfAFVId4lcchRekF3pXubbWm1d0qMzD4E\nTNofTBIElR/oPmG0tkkuZLEsEUAr/MVD73DvP9QhTXZIt9h+gqoQEhLlAoGARYPD\nP0yvskifp3q9Q+1l6HgDk+BgYFu51zlF545lwzQ9BN9hG4cEQ706/uetYCi31ZO6\ndviG5LnKKNgPegNrQG4b77hYIQxPTmbqOmvMTjarmf1fdQrmtIy/XBcx43N7b3f9\nuOXwlDDnQdUSNIZu30kdYcXUzSP3CEm6tue+lksCgYEAwePt5w8Frf2bssn5blzy\n0Y7J+5DjZIme/GeLeh7IVcVSMz369usBdkxiTe0XnvR5rVtv2BWXRuAmmqzOzQ9/\nHMPBlRgYa9SBqw6EKndf0uIo05GupLyhFoVX+47a5MMT1zvTKHHIS5DhqHXSJ9zU\nT5eyzC4rEg/JQVj4cxIGB64=\n-----END PRIVATE KEY-----\n",
+  "client_email": "apad-storage@apad-vaccination.iam.gserviceaccount.com",
+  "client_id": "106889791012613850571",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/apad-storage%40apad-vaccination.iam.gserviceaccount.com"
+}
