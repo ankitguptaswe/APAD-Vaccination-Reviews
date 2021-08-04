@@ -1,9 +1,40 @@
+body {
+  background-color: #fffcf9;
+
+}
+
+@font-face{
+    font-family: 'ZenLoop-Regular'
+    src: url(fonts/ZenLoop-Regular.ttf)
+    font-style: normal
+    font-weight:
+
+}
+
+.img{
+
+    float: right;
+    margin-top: 50px;
+    margin-right: 80px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+}
+
+textarea {
+  background-color: #F0F8FF;
+    }
+input {
+  background-color: #F0F8FF;
+  color: black;
+    }
+
 .card {
   box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
   transition: 0.3s;
-  width: 500;
+  width: 400;
   height: 170;
-
+  background-color: white;
+  color: black
 }
 
 .card_theme {
@@ -11,6 +42,7 @@
   transition: 0.3s;
   width: 500;
   height: 170;
+  background-color: white;
 }
 
 .card:hover {
@@ -23,6 +55,3 @@
 
 .container {
   padding: 2px 16px;
-}
-
-

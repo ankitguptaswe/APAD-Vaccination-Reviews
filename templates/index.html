@@ -17,11 +17,20 @@
 
 <html>
 <head>
-  <title>Datastore and Firebase Auth Example</title>
+    <style>
+p {
+  font-size: 30px;
+}
+</style>
+    <link href="/static/alternatesearchstyle.css" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <script src="{{ url_for('static', filename='script.js') }}"></script>
   <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <script src="https://www.gstatic.com/firebasejs/ui/4.4.0/firebase-ui-auth.js"></script>
   <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/4.4.0/firebase-ui-auth.css" />
+  {% if not user_data %}
+    <p align="center" style="color:black;"><strong> APAD Reviews Project - Group 8</p>
+    {% endif %}
 </head>
 <body>
     <script src="https://www.gstatic.com/firebasejs/8.8.0/firebase-app.js"></script>
@@ -43,28 +52,37 @@
     firebase.analytics();
     </script>
 
-    <h1>Datastore and Firebase Auth Example</h1>
-
     <div id="firebaseui-auth-container"></div>
-
-    <button id="sign-out" hidden=true>Sign Out</button>
-
     <div id="login-info" hidden=true>
-    <h2>Login info:</h2>
     {% if user_data %}
+    <div class="topnav">
+      <table border = 0>
+        <tr><td class="active">
+      <a href="{{ url_for('root') }}"><img src="../static/logo-light.png" width="130" height="40"></a></td><td>
+      <a href="{{ url_for('preferences_show') }}">USER PREFERENCES</a></td><td>
+      <a href="{{ url_for('preferences_set') }}">CHOOSE PREFERENCES</a></td><td>
+      <a href="{{ url_for('view_reviews') }}">FEED</a></td><td>
+      <a href="{{ url_for('create_theme') }}">NEW THEME</a></td><td>
+      <a href="{{ url_for('view_themes') }}">VIEW ALL THEMES</a></td><td>
+      <a href="{{ url_for('create_review') }}">WRITE A REVIEW</a></td><td>
+    </td>
+    </tr>
+    </table>
+    </div>
+    <div class="topnav_footer"><i>Welcome to <b>Snapshot</b>, the place to review local places and stuff</i></div>
+        <h2>User Information</h2>
         <dl>
-        <dt><b>User ID</b></dt><dd>{{ user.user_token }}</dd>
-        <dt><b>User Email</b></dt><dd>{{ user.email }}</dd>
-        <dt><b>Your prefered themes are: </b></dt><dd>{{ user.themes }}</dd>
-        </dl>
-        <br><br><br><br>
-        <h1><a href="../preferences/set">Setup preferences</a></h1>
-        <h1><a href="../themes/all">See all themes</a></h1>
-        <h1><a href="../themes/create">Create a theme</a></h1>
+        <dt><b>User Email</b></dt><br><dd>{{ user.email }}</dd><br>
+        <dt><b>Your prefered themes are: </b></dt>
+        <br>
+        {% for theme in user.themes%}
+        <a><dd>{{ theme }}<dd></a>
+        {% endfor %}
+        <br><br>
     {% elif error_message %}
-        <p>Error: {{ error_message }}</p>
+        <p>{{ error_message }}</p>
     {% endif %}
     </div>
-
+    <button style="height:40px;width:100px" id="sign-out" hidden=true><h3>Sign Out</h3></button>
 </body>
 </html>

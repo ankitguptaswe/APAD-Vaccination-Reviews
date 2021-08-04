@@ -1,84 +1,29 @@
-<!doctype html>
 <html>
 <head>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<link href="alternatesearchstyle.css" rel="stylesheet" type="text/css"/>
-    <style>
-* {box-sizing: border-box;}
-    </style>
-
-    <style>
-    .txt-center {
-      text-align: center;
-    }
-    .hide {
-      display: none;
-    }
-
-    .clear {
-      float: none;
-      clear: both;
-    }
-
-    .rating {
-        width: 90px;
-        unicode-bidi: bidi-override;
-        direction: rtl;
-        text-align: center;
-        position: relative;
-    }
-
-    .rating > label {
-        float: right;
-        display: inline;
-        padding: 0;
-        margin: 0;
-        position: relative;
-        width: 1.1em;
-        cursor: pointer;
-        color: #000;
-    }
-
-    .rating > label:hover,
-    .rating > label:hover ~ label,
-    .rating > input.radio-btn:checked ~ label {
-        color: transparent;
-    }
-
-    .rating > label:hover:before,
-    .rating > label:hover ~ label:before,
-    .rating > input.radio-btn:checked ~ label:before,
-    .rating > input.radio-btn:checked ~ label:before {
-        content: "\2605";
-        position: absolute;
-        left: 0;
-        color: #FFD700;
-    }
-</style>
+<link href="/static/alternatesearchstyle.css" rel="stylesheet" type="text/css"/>
 </head>
-<body>
-
-<div class="topnav">
-  <a class="active" href="#home">Home</a>
-  <a href="#Feed">Feed</a>
-  <a href="#Create Theme">Theme</a>
-  <a href="#See All Themes">See All Themes</a>
-  <a href="#Themes">Theme</a>
-  <a href="#Preferences">Preferences</a>
-  <a href="#Set Preferences">Set Preferences</a>
-  <div class="search-container">
-    <form action="/action_page.php">
-      <input type="text" placeholder="Search.." name="search">
-      <button type="submit"><i class="fa fa-search"></i></button>
-    </form>
-  </div>
-</div>
-
-<div style="padding-left:650px">
+    <body>
+      <div class="topnav">
+        <table border = 0>
+          <tr><td>
+        <a href="{{ url_for('root') }}"><img src="../static/logo-dark.png" width="130" height="40"></a></td><td>
+        <a href="{{ url_for('preferences_show') }}">USER PREFERENCES</a></td><td>
+        <a href="{{ url_for('preferences_set') }}">CHOOSE PREFERENCES</a></td><td>
+        <a href="{{ url_for('view_reviews') }}">FEED</a></td><td>
+        <a href="{{ url_for('create_theme') }}">NEW THEME</a></td><td>
+        <a href="{{ url_for('view_themes') }}">VIEW ALL THEMES</a></td><td class="active" >
+        <a href="{{ url_for('create_review') }}">WRITE A REVIEW</a></td><td>
+      </td>
+    </tr>
+      </table>
+      </div>
+<div class="topnav_footer"><i>Register and post your <b>review</b> in this form</i></div>
+<div>
   <h1>Create a review</h1>
     <form method="POST" action="" enctype="multipart/form-data">
-    <h1>Themes available for you to choose:</h1>
+    <b>Themes available for you to choose:</b><br>
     <select size="10" id="th_preferences" name="th_preferences">
     {% for theme in themes %}
          <option value="{{theme}}">
@@ -108,10 +53,11 @@
      <br><b>Upload a photo:</b><br><br>
      <input type="file" name="th_photo" id="th_photo" onchange="loadFile(event)">
       <br><br>
-     <b>Tags:</b><br><textarea id="th_tags" name="th_tags" rows="4" cols="50"></textarea>
+     <b>Tags:</b><br>
+     <a>Please add tags separated by commas</a><br>
+     <br><textarea id="th_tags" name="th_tags" rows="4" cols="50"></textarea>
      <br><br>
      <p><input type="submit" value="Submit"></p>
    </form>
 <br><br>
-   <a href="{{ url_for('view_themes') }}">See all themes</a><br>
 </div>

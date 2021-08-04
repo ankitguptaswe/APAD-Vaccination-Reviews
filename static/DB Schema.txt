@@ -1,0 +1,22 @@
+CREATE TABLE USER(
+   USER_ID        INTEGER     PRIMARY KEY     NOT NULL,
+   EMAIL          TEXT    NOT NULL,
+   THEMES         TEXT    NOT NULL
+);
+
+CREATE TABLE REVIEWS(
+   REVIEW_ID      INTEGER     PRIMARY KEY     NOT NULL,
+   USER_ID        INTEGER                     NOT NULL,
+   TITLE          TEXT                    NOT NULL,
+   THEME          TEXT                    NOT NULL,
+   RATING         INTEGER                     NOT NULL,
+   PICTURE        TEXT                    NOT NULL,
+   DESCRIPTION    TEXT                    NOT NULL,
+   TAGS           TEXT                    NOT NULL
+);
+
+CREATE TABLE THEMES(
+   THEME_NAME     TEXT     PRIMARY KEY     NOT NULL,
+   PICTURE        TEXT,
+   DESCRIPTION    TEXT
+);

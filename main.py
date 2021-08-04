@@ -1,22 +1,4 @@
-## Web-app tree
-# | /
-# | /login                       ## TODO
-# | /
-# | /preferences
-# | /preferences/set
-# | /
-# | /themes/all
-# | /themes/create
-# | /themes/<theme_name>
-# | /
-# | /reviews/<theme_name>       ## TODO
-# | /reviews/create
-# | /reviews/feed               ## TODO
-# |
-
-# Libraries and modules
 import datetime
-import sqlite3
 from flask import Flask, render_template, request, redirect, url_for
 from google.auth.transport import requests
 from google.cloud import datastore
@@ -26,8 +8,8 @@ import pymongo
 import urllib.parse
 from werkzeug.utils import secure_filename
 import os
-from PIL import Image
-import base64
+import re
+import geocoder
 
 # Bucket Google Cloud Storage
 from io import BytesIO
@@ -88,7 +70,6 @@ def is_user_authenticated():
             # verification checks fail.
             error_message = str(exc)
             token_expired = 1
-
     if not token_expired and id_token:
         return claims
     else:
@@ -96,23 +77,17 @@ def is_user_authenticated():
 
 def update_user_theme(user_email, themes):
     db = setup_mongodb_session()
-
     data = db.users.find({"email": user_email})
-
     query = { "email": user_email }
     new_preferences = { "$set": { "themes": themes } }
-
     db.users.update_one(query, new_preferences)
-
     data = db.users.find({"email": user_email})
 
 @app.route('/')
 def root():
     db = setup_mongodb_session()
     claims = is_user_authenticated()
-
     if claims is not False:
-
         user_id = claims['user_id']
         user_email = claims['email']
         db = setup_mongodb_session()
@@ -130,7 +105,7 @@ def root():
         data = [cur for cur in curr]
         return render_template('index.html', user_data=claims, error_message=None, user=data[0])
     else:
-        return render_template('index.html')
+        return render_template('index.html', error_message=True)
 
 @app.route('/preferences/set', methods=['GET', 'POST'])
 def preferences_set():
@@ -138,7 +113,7 @@ def preferences_set():
     claims = is_user_authenticated()
     if claims is not False:
         current_user = db.users.find({"user_token": claims['user_id']})
-    
+
         collections = db.list_collection_names()
         data = db.themes.find()
 
@@ -186,12 +161,9 @@ def create_theme():
         theme_description = request.form['th_description']
         theme_photo = request.files.get('photo', False)
 
-        #'_id': ObjectId('6102cf1af9a93c37284f6f5c'), 'theme_name': 'vaccine', 'picture': b'NA', 'description': 'take it and enjoy'}
         db = setup_mongodb_session()
 
         collections = db.list_collection_names()
-
-        # db.themes.drop()
 
         data = db.themes.find()
 
@@ -201,16 +173,10 @@ def create_theme():
         client = storage.Client.from_service_account_json("apad-storage.json", project="APAD-Vaccination")
 
         # client = storage.Client()
-        bucket = client.get_bucket('apad-storage')
+        bucket = client.get_bucket('apad-group8-bucket')
         filename = "img/themes/" + file_name
         blob = bucket.blob(filename)
         blob.upload_from_file(theme_photo.stream, content_type=theme_photo.content_type)
-
-        # blob.make_public()
-        # url = blob.public_url
-
-        # if theme_photo.filename != '':
-        #     theme_photo.save("static/img/themes/" + file_name)
 
         new_theme = {'_id': file_id,
                     'theme_name': theme_name,
@@ -218,17 +184,15 @@ def create_theme():
                     'description': theme_description}
 
         db.themes.insert_one(new_theme)
+        return view_themes()
 
     return render_template("themes_create.html")
 
 @app.route('/themes/all', methods=['GET'])
 def view_themes():
-    if request.method == 'GET':
-        #'_id': ObjectId('6102cf1af9a93c37284f6f5c'), 'theme_name': 'vaccine', 'picture': b'NA', 'description': 'take it and enjoy'}
-        db = setup_mongodb_session()
-
-        collections = db.list_collection_names()
-        data = db.themes.find()
+    db = setup_mongodb_session()
+    collections = db.list_collection_names()
+    data = db.themes.find()
 
     return render_template("themes_all.html", themes_data=data)
 
@@ -283,7 +247,7 @@ def create_review():
             client = storage.Client.from_service_account_json("apad-storage.json", project="APAD-Vaccination")
 
             # client = storage.Client()
-            bucket = client.get_bucket('apad-storage')
+            bucket = client.get_bucket('apad-group8-bucket')
             filename = "img/reviews/" + file_name
             blob = bucket.blob(filename)
             blob.upload_from_file(review_photo.stream, content_type=review_photo.content_type)
@@ -296,6 +260,9 @@ def create_review():
             review_description = request.form['th_review']
             review_rating = request.form['star']
             review_tags = request.form['th_tags']
+
+            g = geocoder.ip('me').latlng
+
             db.reviews.insert({
                 "user_token": review_user_id,
                 "title": review_title,
@@ -303,9 +270,11 @@ def create_review():
                 "rating": review_rating,
                 "picture": file_name,
                 "description": review_description,
-                "tags": review_tags
+                "tags": review_tags,
+                "geo_location": g
             })
-            return view_reviews()
+
+            return redirect(url_for("view_reviews"))
         else:
             return render_template('review_create.html', themes=themes)
     else:
@@ -317,7 +286,23 @@ def view_reviews():
     claims = is_user_authenticated()
     if claims is not False:
         if request.method == 'POST':
-            return view_reviews_by_tags(request.form["search"])
+            tag_name = request.form["search"]
+            all_reviews = []
+            curr_user = db.users.find({"user_token": claims["user_id"]})
+            sub_themes = curr_user[0]["themes"]
+            for tag in tag_name.split(','):
+                rgx = re.compile('.*'+tag+'.*', re.IGNORECASE)  # compile the regex
+
+            search_request = {
+                '$and': [
+                    {'tags': {'$regex': rgx}},
+                    {'theme': {'$in' : sub_themes}}
+                ]
+            }
+            for review in db.reviews.find(search_request):
+                if review not in all_reviews:
+                    all_reviews.append(review)
+            return render_template("feed_reviews_tags.html", reviews=all_reviews)
         else:
             current_user = db.users.find({"user_token": claims['user_id']})
             all_reviews = []
@@ -334,30 +319,9 @@ def view_reviews():
     else:
         return root()
 
-@app.route('/reviews/tags/<string:tag_name>', methods=['GET'])
-def view_reviews_by_tags(tag_name):
-    import re
-    db = setup_mongodb_session()
-    claims = is_user_authenticated()
-    if claims is not False:
-        all_reviews = []
-        curr_user = db.users.find({"user_token": claims["user_id"]})
-        sub_themes = curr_user[0]["themes"]
-        for tag in tag_name.split(','):
-            rgx = re.compile('.*'+tag+'.*', re.IGNORECASE)  # compile the regex
-    
-        search_request = {
-            '$and': [
-                {'tags': {'$regex': rgx}},
-                {'theme': {'$in' : sub_themes}}
-            ]
-        }
-        for review in db.reviews.find(search_request):
-            if review not in all_reviews:
-                all_reviews.append(review)
-        return render_template("feed_reviews_tags.html", reviews=all_reviews)
-    else:
-        return root()
+@app.route('/geoview', methods=['GET'])
+def get_geoview_page():
+    return render_template("geo_view.html")
 
 
 if __name__ == '__main__':

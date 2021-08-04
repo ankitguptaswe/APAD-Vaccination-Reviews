@@ -1,27 +1,46 @@
 <html>
 
  <head>
-   <!-- <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"> -->
-   <link type="text/css" rel="stylesheet" href="../static/style.css">
+   <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+   <link href="/static/alternatesearchstyle.css" rel="stylesheet" type="text/css"/>
  </head>
 
 
  <body>
+
+ <body>
+<body>
+  <div class="topnav">
+    <table border = 0>
+      <tr><td>
+    <a href="{{ url_for('root') }}"><img src="../static/logo-dark.png" width="130" height="40"></a></td><td>
+    <a href="{{ url_for('preferences_show') }}">USER PREFERENCES</a></td><td>
+    <a href="{{ url_for('preferences_set') }}">CHOOSE PREFERENCES</a></td><td>
+    <a href="{{ url_for('view_reviews') }}">FEED</a></td><td>
+    <a href="{{ url_for('create_theme') }}">NEW THEME</a></td><td>
+    <a href="{{ url_for('view_themes') }}">VIEW ALL THEMES</a></td><td>
+    <a href="{{ url_for('create_review') }}">WRITE A REVIEW</a></td><td>
+  </td>
+<td>
+  <div class="search-container">
+    <form id="search" method="POST">
+      <input type="text" placeholder="Search for reviews" name="search">
+      <button type="submit"></button>
+    </form>
+  </div></td>
+</tr>
+</table>
+</div>
 <table border = 0 style = "width: 100%; top: 0; bottom: 0; left: 0; right: 0; border: 0px solid">
-<br>
-  <tr>
-    <td><!-- row 1 column 1 --></td>
-    <td><!-- row 1 column 2 --></td>
-    <td><!-- row 1 column 3 --></td>
-  </tr>
-    <tr>
-      <td><!-- row 2 column 1 --></td>
+
+<h1> Filtered reviews under your selected themes </h1>
 {% for post in reviews %}
 <!-- new loop-->
            <td class="card">
              <table border = 0 style = "width: 100%; height: 100%; top: 0; bottom: 0; left: 0; right: 0;">
                <tr>
-                 <td colspan = 2 rowspan = 3><center><img src="https://storage.googleapis.com/apad-storage/img/reviews/{{post['picture']}}" alt="Red dot"  width="150" height="150"/></center></td>
+                 <td colspan = 2 rowspan = 5><center><img src="https://storage.googleapis.com/apad-group8-bucket/img/reviews/{{post['picture']}}" alt="Red dot"  width="150" height="150"/></center></td>
                  <td><b>{{post['title']}}</b></td>
                </tr>
                  <tr>
@@ -36,6 +55,9 @@
 'tags': ['pfizer', 'vaccine']} -->
 
                    <td>Description: {{post['description']}}</td>
+                   <tr>
+                   <td>Theme: {{post['theme']}}</td>
+                 </tr>
                  </tr>
                    <tr>
                      <td>
@@ -76,6 +98,9 @@
                    <tr>
                      <td><div style="text-align: right"><b>Tags: </b><i>{{post['tags']}}</i></div></td>
                    </tr>
+                   <tr>
+                     <td colspan=2><div style="text-align: left"><b>Location: </b><i>{{post['geo_location']}}</i></div></td>
+                   </tr>
                </table>
            </td>
 {% endfor %}
@@ -88,10 +113,6 @@
         </tr>
 
   </table>
-  <a href="../preferences/set">Update theme preferences</a><br>
-  <br>
-  <a href="{{ url_for('view_themes') }}">See all themes</a><br>
-  <a href="{{ url_for('create_review') }}">Create a review</a>
  </body>
 
 </html>

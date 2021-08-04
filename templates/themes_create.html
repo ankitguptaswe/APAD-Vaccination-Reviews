@@ -1,32 +1,25 @@
-<!doctype html>
 <html>
 <head>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<link href="alternatesearchstyle.css" rel="stylesheet" type="text/css"/>
-    <style>
-* {box-sizing: border-box;}
-    </style>
+<link href="/static/alternatesearchstyle.css" rel="stylesheet" type="text/css"/>
 </head>
-
-<body>
-
-<div class="topnav">
-  <a class="active" href="#home">Home</a>
-  <a href="#Feed">Feed</a>
-  <a href="#Create Theme">Theme</a>
-  <a href="#See All Themes">See All Themes</a>
-  <a href="#Themes">Theme</a>
-  <a href="#Preferences">Preferences</a>
-  <a href="#Set Preferences">Set Preferences</a>
-  <div class="search-container">
-    <form action="/action_page.php">
-      <input type="text" placeholder="Search.." name="search">
-      <button type="submit"><i class="fa fa-search"></i></button>
-    </form>
-  </div>
-</div>
-
-<div style="padding-left:650px">
+    <body>
+      <div class="topnav">
+        <table border = 0>
+          <tr><td>
+        <a href="{{ url_for('root') }}"><img src="../static/logo-dark.png" width="130" height="40"></a></td><td>
+        <a href="{{ url_for('preferences_show') }}">USER PREFERENCES</a></td><td>
+        <a href="{{ url_for('preferences_set') }}">CHOOSE PREFERENCES</a></td><td>
+        <a href="{{ url_for('view_reviews') }}">FEED</a></td><td class="active">
+        <a href="{{ url_for('create_theme') }}">NEW THEME</a></td><td>
+        <a href="{{ url_for('view_themes') }}">VIEW ALL THEMES</a></td><td>
+        <a href="{{ url_for('create_review') }}">WRITE A REVIEW</a></td><td>
+      </td>
+    </tr>
+      </table>
+      </div>
+<div class="topnav_footer"><i>If you are missing a theme you may <b>create a new </b>one and other users will be able to leave their reviews on it</i></div>
+<div>
   <h1>Create a new theme:</h1>
   <form method="POST" action="" enctype="multipart/form-data">
      Theme name:
@@ -40,10 +33,6 @@
      <br><br><br><input type="submit" value="Save">
    </form>
    <br><br>
-   <a href="{{ url_for('preferences_show') }}">Back to preferences</a><br>
-   <a href="{{ url_for('view_themes') }}">See all themes</a>
 </div>
-
-
  </body>
 </html>
