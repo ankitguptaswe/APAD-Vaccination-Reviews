@@ -1,24 +1,6 @@
 <html>
   <head>
-    <style>
-        #map {
-          height: 100%;
-        }
-        html, body {
-          height: 100%;
-          margin: 0;
-          padding: 0;
-        }
-        .infowindow-container {
-            width: 330px;
-        }
-        .inner {
-            display: inline-block;
-            position: absolute;
-            top: 0;
-            padding: 10px;
-        }
-      </style>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <title>Simple Map</title>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
     <link rel="stylesheet" type="text/css" href="./style.css" />

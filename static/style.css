@@ -1,6 +1,5 @@
 body {
   background-color: #fffcf9;
-
 }
 
 @font-face{
@@ -8,25 +7,15 @@ body {
     src: url(fonts/ZenLoop-Regular.ttf)
     font-style: normal
     font-weight:
-
 }
 
 .img{
-
     float: right;
     margin-top: 50px;
     margin-right: 80px;
     margin-bottom: 0px;
     margin-left: 0px;
 }
-
-textarea {
-  background-color: #F0F8FF;
-    }
-input {
-  background-color: #F0F8FF;
-  color: black;
-    }
 
 .card {
   box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
@@ -55,3 +44,62 @@ input {
 
 .container {
   padding: 2px 16px;
+}
+
+.hide {
+  display: none;
+}
+
+.clear {
+  float: none;
+  clear: both;
+}
+
+.stars {
+    width: 80px;
+    unicode-bidi: bidi-override;
+    direction: rtl;
+    text-align: center;
+    position: relative;
+}
+
+.stars > label {
+    float: right;
+    display: inline;
+    padding: 0;
+    margin: 0;
+    position: relative;
+    width: 1.1em;
+    cursor: pointer;
+    color: #000;
+}
+
+.stars > label:hover,
+.stars > label:hover ~ label,
+.stars > input.radio-btn:checked ~ label {
+    color: transparent;
+}
+
+.stars > label:hover:before,
+.stars > label:hover ~ label:before,
+.stars > input.radio-btn:checked ~ label:before,
+.stars > input.radio-btn:checked ~ label:before {
+    content: "\2605";
+    position: absolute;
+    left: 0;
+    color: #FFD700;
+}
+
+#map {
+  height: 100%;
+}
+
+.infowindow-container {
+    width: 330px;
+}
+.inner {
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    padding: 10px;
+}
