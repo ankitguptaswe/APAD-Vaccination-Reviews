@@ -1,22 +1,5 @@
-<!--
- Copyright 2021 Google LLC
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
-      http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
--->
-
-<html>
-<head>
-</style>
+<html><title>Welcome to Snapshot!</title>
+<head><link rel="icon" href="../static/logo-icon.png">
     <link href="/static/alternatesearchstyle.css" rel="stylesheet" type="text/css"/>
   <script src="{{ url_for('static', filename='script.js') }}"></script>
   <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
@@ -50,34 +33,33 @@
     <div id="login-info" hidden=true>
     {% if user_data %}
     <div class="topnav">
-      <table border = 0>
+      <table border = 0 width=100%>
         <tr><td class="active">
-      <a href="{{ url_for('root') }}"><img src="../static/logo-light.png" width="130" height="40"></a></td><td>
-      <a href="{{ url_for('preferences_show') }}">USER PREFERENCES</a></td><td>
-      <a href="{{ url_for('preferences_set') }}">CHOOSE PREFERENCES</a></td><td>
-      <a href="{{ url_for('view_reviews') }}">FEED</a></td><td>
-      <a href="{{ url_for('create_theme') }}">NEW THEME</a></td><td>
-      <a href="{{ url_for('view_themes') }}">VIEW ALL THEMES</a></td><td>
-      <a href="{{ url_for('create_review') }}">WRITE A REVIEW</a></td><td><td>
-      <a href="{{ url_for('get_geoview_page') }}">MAPS</a></td>
-    </td>
+      <a href="{{ url_for('root') }}"><img src="../static/logo-light.png" width="130" height="40"></a></td><td class="not_active">
+      <a href="{{ url_for('preferences_show') }}">USER PREFERENCES</a></td><td class="not_active">
+      <a href="{{ url_for('preferences_set') }}">CHOOSE PREFERENCES</a></td><td class="not_active">
+      <a href="{{ url_for('view_reviews') }}">FEED</a></td><td class="not_active">
+      <a href="{{ url_for('create_theme') }}">NEW THEME</a></td><td class="not_active">
+      <a href="{{ url_for('view_themes') }}">VIEW ALL THEMES</a></td><td class="not_active">
+      <a href="{{ url_for('create_review') }}">WRITE A REVIEW</a></td><td class="not_active">
+      <a href="{{ url_for('get_geoview_page') }}">MAPS</a></td class="not_active">
     </tr>
     </table>
     </div>
     <div class="topnav_footer"><i>Welcome to <b>Snapshot</b>, the place to review local places and stuff</i></div>
+    <div style="text-align: left; padding-left: 50px; padding-top: 15px;">
         <h2>User Information</h2>
-        <dl>
-        <dt><b>User Email</b></dt><br><dd>{{ user.email }}</dd><br>
-        <dt><b>Your prefered themes are: </b></dt>
+        <b>User Email</b><br>{{ user.email }}<br>
+        <br><b>Your prefered themes are: </b>
         <br>
         {% for theme in user.themes%}
-        <a><dd>{{ theme }}<dd></a>
+        <p><a>{{ theme }}</a></p>
         {% endfor %}
         <br><br>
     {% elif error_message %}
         <p>{{ error_message }}</p>
     {% endif %}
-    </div>
     <button style="height:40px;width:100px" id="sign-out" hidden=true><h3>Sign Out</h3></button>
+</div>
 </body>
 </html>

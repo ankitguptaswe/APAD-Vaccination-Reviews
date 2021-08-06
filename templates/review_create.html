@@ -1,25 +1,28 @@
 <html>
+<title>Create a review</title>
+<link rel="icon" href="../static/logo-icon.png">
 <head>
   <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 <link href="/static/alternatesearchstyle.css" rel="stylesheet" type="text/css"/>
 </head>
     <body>
       <div class="topnav">
-        <table border = 0>
-          <tr><td>
-        <a href="{{ url_for('root') }}"><img src="../static/logo-dark.png" width="130" height="40"></a></td><td>
-        <a href="{{ url_for('preferences_show') }}">USER PREFERENCES</a></td><td>
-        <a href="{{ url_for('preferences_set') }}">CHOOSE PREFERENCES</a></td><td>
-        <a href="{{ url_for('view_reviews') }}">FEED</a></td><td>
-        <a href="{{ url_for('create_theme') }}">NEW THEME</a></td><td>
-        <a href="{{ url_for('view_themes') }}">VIEW ALL THEMES</a></td><td class="active" >
-        <a href="{{ url_for('create_review') }}">WRITE A REVIEW</a></td><td>
+        <table border = 0 width=100%>
+          <tr><td class="not_active">
+        <a href="{{ url_for('root') }}"><img src="../static/logo-dark.png" width="130" height="40"></a></td><td class="not_active">
+        <a href="{{ url_for('preferences_show') }}">USER PREFERENCES</a></td><td class="not_active">
+        <a href="{{ url_for('preferences_set') }}">CHOOSE PREFERENCES</a></td><td class="not_active">
+        <a href="{{ url_for('view_reviews') }}">FEED</a></td><td class="not_active">
+        <a href="{{ url_for('create_theme') }}">NEW THEME</a></td><td class="not_active">
+        <a href="{{ url_for('view_themes') }}">VIEW ALL THEMES</a></td><td class="active">
+        <a href="{{ url_for('create_review') }}">WRITE A REVIEW</a></td><td class="not_active">
+        <a href="{{ url_for('get_geoview_page') }}">MAPS</a></td class="not_active">
       </td>
     </tr>
       </table>
       </div>
 <div class="topnav_footer"><i>Register and post your <b>review</b> in this form</i></div>
-<div>
+<div style="text-align: left; padding-left: 50px; padding-top: 15px;">
   <h1>Create a review</h1>
     <form method="POST" action="" enctype="multipart/form-data">
     <b>Themes available for you to choose:</b><br>

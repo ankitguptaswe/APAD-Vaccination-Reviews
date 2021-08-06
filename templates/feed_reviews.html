@@ -1,4 +1,6 @@
 <html>
+<title>Your feed</title>
+<link rel="icon" href="../static/logo-icon.png">
  <head>
    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
    <link href="/static/alternatesearchstyle.css" rel="stylesheet" type="text/css"/>
@@ -6,27 +8,26 @@
  <body>
 <body>
   <div class="topnav">
-    <table border = 0>
-      <tr><td>
-    <a href="{{ url_for('root') }}"><img src="../static/logo-dark.png" width="130" height="40"></a></td><td>
-    <a href="{{ url_for('preferences_show') }}">USER PREFERENCES</a></td><td>
+    <table border = 0 width=100%>
+      <tr><td class="not_active">
+    <a href="{{ url_for('root') }}"><img src="../static/logo-dark.png" width="130" height="40"></a></td><td class="not_active">
+    <a href="{{ url_for('preferences_show') }}">USER PREFERENCES</a></td><td class="not_active">
     <a href="{{ url_for('preferences_set') }}">CHOOSE PREFERENCES</a></td><td class="active">
-    <a href="{{ url_for('view_reviews') }}">FEED</a></td><td>
-    <a href="{{ url_for('create_theme') }}">NEW THEME</a></td><td>
-    <a href="{{ url_for('view_themes') }}">VIEW ALL THEMES</a></td><td>
-    <a href="{{ url_for('create_review') }}">WRITE A REVIEW</a></td><td>
+    <a href="{{ url_for('view_reviews') }}">FEED</a></td><td class="not_active">
+    <a href="{{ url_for('create_theme') }}">NEW THEME</a></td><td class="not_active">
+    <a href="{{ url_for('view_themes') }}">VIEW ALL THEMES</a></td><td class="not_active">
+    <a href="{{ url_for('create_review') }}">WRITE A REVIEW</a></td><td class="not_active">
+    <a href="{{ url_for('get_geoview_page') }}">MAPS</a></td class="not_active">
   </td>
-  <td>
-    <div class="search-container">
+  <td class="not-active-no-hover">
     <form id="search" method="POST">
       <input type="text" placeholder="Search for reviews" name="search">
-      <button type="submit"></button>
-    </form>
-  </div></td>
+    </form></td>
   </tr>
   </table>
   </div>
-  <div class="topnav_footer"><i>In your preferences, you have subscribbed to some themes and below you are seeing all <b>reviews associated</b> to them</i></div>
+  <div class="topnav_footer"><i>In your preferences, you have subscribed to some themes and below you are seeing all <b>reviews associated</b> to them</i></div>
+<div style="text-align: left; padding-left: 50px; padding-top: 15px;">
 <h1> Your Home Feed </h1>
 {% if temp == False %}
 <h1>You have not selected any themes. Select a theme to see reviews</h1>
@@ -39,6 +40,8 @@
         {% endfor %}
 
 {% for theme in themes%}
+{% set count = namespace(value=0) %}
+<br>
 <h1>Reviews associated with: {{theme}}</h1>
 <table border = 0 style = "width: 100%; top: 0; bottom: 0; left: 0; right: 0; border: 0px solid">
 <br>
@@ -47,8 +50,15 @@
 {% if post['theme'] == theme %}
 <!-- new loop-->
 
+
+{% if count.value == 3 %}
+<tr height=25px></tr>
+{% set count.value = 0 %}
+{% endif %}
+
+{% set count.value = count.value + 1 %}
 <td class="card">
-  <table border = 0 style = "width: 100%; height: 100%; top: 0; bottom: 0; left: 0; right: 0;">
+  <table border = 0 style = "width: 500px; height: 200px; margin-top: 5; margin-bottom: 5; margin-left: 5; margin-right: 5;">
     <tr>
       <td colspan = 1 rowspan = 2><center><img src="https://storage.googleapis.com/apad-group8-bucket/img/reviews/{{ post['picture'] }}" alt="Red dot"  width="150" height="150"/></center></td>
       <td colspan = 1 rowspan = 1><b>{{post['title']}}</b></td>
@@ -98,12 +108,13 @@
           <td colspan=2><div style="text-align: left"><b>Location: </b><i>{{post['geo_location']}}</i></div></td>
         </tr>
     </table>
+    <td width=25px></td>
 </td>
 
 
 {% endif %}
-{% endfor %}
 
+{% endfor %}
 <!-- end loop-->
 
      <!-- THE CARD FINISHES HERE -->
@@ -113,6 +124,7 @@
 
   </table>
 {%endfor%}
+</div>
  </body>
 
 </html>

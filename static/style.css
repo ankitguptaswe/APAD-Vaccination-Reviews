@@ -6,7 +6,6 @@ body {
     font-family: 'ZenLoop-Regular'
     src: url(fonts/ZenLoop-Regular.ttf)
     font-style: normal
-    font-weight:
 }
 
 .img{
@@ -56,10 +55,11 @@ body {
 }
 
 .stars {
-    width: 80px;
+    margin-left: -17px;
+    width: 100px;
     unicode-bidi: bidi-override;
     direction: rtl;
-    text-align: center;
+    text-align: left;
     position: relative;
 }
 
