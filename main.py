@@ -321,7 +321,27 @@ def view_reviews():
 
 @app.route('/geoview', methods=['GET'])
 def get_geoview_page():
-    return render_template("geo_view.html")
+    db = setup_mongodb_session()
+    claims = is_user_authenticated()
+    if claims is not False:
+        current_user = db.users.find({"user_token": claims['user_id']})
+        all_reviews = []
+        temp = True
+
+        if current_user[0]["themes"] == []:
+            temp = False
+
+        for theme in current_user[0]["themes"]:
+            for review in db.reviews.find({"theme": theme}):
+                all_reviews.append(review)
+
+        # json_data = json.loads(json_util.dumps(all_reviews))
+
+        print(all_reviews)
+
+        return render_template("geo_view.html", reviews=all_reviews, temp=temp)
+    else:
+        return root()
 
 
 if __name__ == '__main__':

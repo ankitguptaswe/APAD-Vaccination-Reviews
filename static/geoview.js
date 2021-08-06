@@ -2,13 +2,33 @@ let map;
 let marker;
 
 function initMap() {
+    // _args = Args;
+    // const locations = [_args][0][0];
+    // alert(locations);
+
     map = new google.maps.Map(document.getElementById("map"), {
       zoom: 10,
       center: { lat: 30.024, lng: -97.887 },
     });
 
+    const locations = [
+      {lat: 13, lng: 13},
+        {lat: 13, lng: 13},
+          {lat: 13, lng: 13},
+            {lat: 13, lng: 13}
+    ];
+
     var markers = [];
-    for (var i = 0; i < locations.length; i++) {
+    console.log(locations);
+    for (let i = 0; i < 4; i++) {
+
+        // var array = locations[0][0][i];
+        // var array2 = array.split(",");
+        // var lat = array2[0].substring(1);
+        // var lng = array2[1].slice(0,-1);
+
+
+
         var pos = new google.maps.LatLng(locations[i].lat, locations[i].lng);
 
         var marker = new google.maps.Marker({
@@ -36,12 +56,3 @@ function initMap() {
         "https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m",
     });
   }
-  const locations = [
-    { lat: 30.03233, lng: -97.982398 },
-    { lat: 30.03989, lng: -97.238389 },
-    { lat: 30.02787, lng: -97.232023 },
-    { lat: 30.02894, lng: -97.233434 },
-    { lat: 30.03444, lng: -97.216968 },
-  ];
-
-initMap();

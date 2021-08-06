@@ -4,7 +4,29 @@
     <title>Simple Map</title>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
     <link rel="stylesheet" type="text/css" href="./style.css" />
-    <script src="../static/geoview.js"></script>
+    <script src="../static/geoview.js">
+    </script>
+
+    <script type="text/javascript" src="../static/geoview.js"></script>
+    <script type="text/javascript">
+    var reviews = [];
+    var flag = 0;
+
+    "{% for review in reviews %}"
+      reviews[flag] = "{{review['geo_location']}}";
+      flag++;
+    "{% endfor %}"
+
+    const locations = [
+      {lat: 13, lng: 13},
+        {lat: 13, lng: 13},
+          {lat: 13, lng: 13},
+            {lat: 13, lng: 13}
+    ];
+
+    initMap([reviews]);
+    </script>
+
   </head>
   <body>
     <div id="map"></div>
