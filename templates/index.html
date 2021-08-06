@@ -1,4 +1,3 @@
-<!doctype html>
 <!--
  Copyright 2021 Google LLC
 
@@ -17,13 +16,8 @@
 
 <html>
 <head>
-    <style>
-p {
-  font-size: 30px;
-}
 </style>
     <link href="/static/alternatesearchstyle.css" rel="stylesheet" type="text/css"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <script src="{{ url_for('static', filename='script.js') }}"></script>
   <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <script src="https://www.gstatic.com/firebasejs/ui/4.4.0/firebase-ui-auth.js"></script>
@@ -64,7 +58,8 @@ p {
       <a href="{{ url_for('view_reviews') }}">FEED</a></td><td>
       <a href="{{ url_for('create_theme') }}">NEW THEME</a></td><td>
       <a href="{{ url_for('view_themes') }}">VIEW ALL THEMES</a></td><td>
-      <a href="{{ url_for('create_review') }}">WRITE A REVIEW</a></td><td>
+      <a href="{{ url_for('create_review') }}">WRITE A REVIEW</a></td><td><td>
+      <a href="{{ url_for('get_geoview_page') }}">MAPS</a></td>
     </td>
     </tr>
     </table>
