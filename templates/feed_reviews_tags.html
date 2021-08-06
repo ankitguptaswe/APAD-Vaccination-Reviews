@@ -27,13 +27,13 @@
 </div>
 <div class="topnav_footer"><i>These are the reviews posted with the <b>#tag</b> you have chosen</i></div>
 <div style="text-align: left; padding-left: 50px; padding-top: 15px;">
-  <table border = 0 style = "width: 100%;">
+  <table border = 0 style = "width: 100%; top: 0; bottom: 0; left: 0; right: 0; border: 0px solid">
   <h1> Filtered reviews under your selected themes and tags </h1>
 {% set count = namespace(value=0) %}
 {% for post in reviews %}
 <!-- new loop-->
 
-{% if count.value == 3 %}
+{% if count.value == 2 %}
 <tr height=25px></tr>
 {% set count.value = 0 %}
 {% endif %}
@@ -93,13 +93,6 @@
     <td width=25px></td>
 </td>
 {% endfor %}
-
-<!-- end loop-->
-
-     <!-- THE CARD FINISHES HERE -->
-
-            <td><!-- row 4 column 3 --></td>
-        </tr>
 
   </table>
 </div>

@@ -23,14 +23,14 @@
       </table>
       </div>
 <div style="text-align: left; padding-left: 50px; padding-top: 15px;">
-<table border = 0>
+  <table border = 0 style = "width: 100%; top: 0; bottom: 0; left: 0; right: 0; border: 0px solid">
 <!-- end loop -->
 
 <h1>All reviews associated with the theme: {{details['theme_name']}}</h1>
 {% set count = namespace(value=0) %}
 {% for review in details1 %}
 
-{% if count.value == 3 %}
+{% if count.value == 2 %}
 <tr height=25px></tr>
 {% set count.value = 0 %}
 {% endif %}
@@ -93,11 +93,6 @@
 </td>
 {% endfor %}
 
-<!-- end loop-->
-
-     <!-- THE CARD FINISHES HERE -->
-
-            <td><!-- row 4 column 3 --></td>
         </tr>
 
   </table>
