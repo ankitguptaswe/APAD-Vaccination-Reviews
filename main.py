@@ -1,4 +1,3 @@
-import datetime
 from flask import Flask, render_template, request, redirect, url_for
 from google.auth.transport import requests
 from google.cloud import datastore
@@ -6,10 +5,7 @@ import google.oauth2.id_token
 import random, secrets
 import pymongo
 import urllib.parse
-from werkzeug.utils import secure_filename
-import os
 import re
-import geocoder
 
 # Bucket Google Cloud Storage
 from io import BytesIO
@@ -261,8 +257,19 @@ def create_review():
             review_rating = request.form['star']
             review_tags = request.form['th_tags']
 
-            g = geocoder.ip('me').latlng
+            #hardcoding min and max lat, lng for Austin area
+            min_lat = 30.0
+            max_lat = 31.0
+            min_lng = -97.0
+            max_lng = -98.0
 
+            #selecting lat and lng randomly from the min/max defined above
+            lat = random.uniform(min_lat, max_lat)
+            lng = random.uniform(min_lng, max_lng)
+            g = []
+            g.append (lat)
+            g.append (lng)
+            
             db.reviews.insert({
                 "user_token": review_user_id,
                 "title": review_title,
@@ -334,10 +341,6 @@ def get_geoview_page():
         for theme in current_user[0]["themes"]:
             for review in db.reviews.find({"theme": theme}):
                 all_reviews.append(review)
-
-        # json_data = json.loads(json_util.dumps(all_reviews))
-
-        print(all_reviews)
 
         return render_template("geo_view.html", reviews=all_reviews, temp=temp)
     else:

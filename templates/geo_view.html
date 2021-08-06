@@ -9,29 +9,24 @@
 
     <script type="text/javascript" src="../static/geoview.js"></script>
     <script type="text/javascript">
-    var reviews = [];
+    var geo_location = [];
+    var title = [];
+    var picture = [];
     var flag = 0;
 
     "{% for review in reviews %}"
-      reviews[flag] = "{{review['geo_location']}}";
+      geo_location[flag] = "{{review['geo_location']}}";
+      title[flag] = "{{review['title']}}";
+      picture[flag] = "{{review['picture']}}";
       flag++;
     "{% endfor %}"
-
-    const locations = [
-      {lat: 13, lng: 13},
-        {lat: 13, lng: 13},
-          {lat: 13, lng: 13},
-            {lat: 13, lng: 13}
-    ];
-
-    initMap([reviews]);
+    setVariables(geo_location, title, picture)
     </script>
-
   </head>
   <body>
     <div id="map"></div>
     <script src="https://unpkg.com/@googlemaps/markerclustererplus/dist/index.min.js"></script>
-    <script async
+    <script
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBlwvA77gpZf0-WR-hNJmZoHtg5QaIRT3g&callback=initMap">
     </script>
   </body>
