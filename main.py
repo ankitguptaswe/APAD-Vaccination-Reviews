@@ -21,6 +21,7 @@ app.config['UPLOAD_FOLDER'] = 'static/img/reviews'
 
 
 def setup_mongodb_session():
+    #Connecting to our DB everytime we need to push/pull
     username = urllib.parse.quote_plus('admin')
     password = urllib.parse.quote_plus('asdasd@123')
     client = pymongo.MongoClient(
@@ -75,6 +76,7 @@ def is_user_authenticated():
         return False
 
 def update_user_theme(user_email, themes):
+    #We run the function everytime we need to update user preferences
     db = setup_mongodb_session()
     data = db.users.find({"email": user_email})
     query = { "email": user_email }
@@ -84,6 +86,7 @@ def update_user_theme(user_email, themes):
 
 @app.route('/')
 def root():
+    #Root gives us the login page after checking user authentication. We are using DB to get basic user information once user is logged in.
     db = setup_mongodb_session()
     claims = is_user_authenticated()
     if claims is not False:
@@ -108,6 +111,7 @@ def root():
 
 @app.route('/preferences/set', methods=['GET', 'POST'])
 def preferences_set():
+    #Update user preferences page
     db = setup_mongodb_session()
     claims = is_user_authenticated()
     if claims is not False:
@@ -119,6 +123,7 @@ def preferences_set():
         email = claims['email']
         all_themes = []
 
+        #All themes appeneded to a list for printing
         for theme in data:
             all_themes.append(theme['theme_name'])
 
@@ -135,6 +140,7 @@ def preferences_set():
 
 @app.route('/preferences', methods=['GET', 'POST'])
 def preferences_show():
+    #Show current user preferences on the page
     db = setup_mongodb_session()
     claims = is_user_authenticated()
     if claims is not False:
@@ -155,7 +161,9 @@ def preferences_show():
 
 @app.route('/themes/create', methods=['GET', 'POST'])
 def create_theme():
+    #For creation of new themes
     if request.method == 'POST':
+        #Post method gets all information from html file and posts to MongoDB
         theme_name = request.form['th_name']
         theme_description = request.form['th_description']
         theme_photo = request.files.get('photo', False)
@@ -166,9 +174,11 @@ def create_theme():
 
         data = db.themes.find()
 
+        #We store the picture as a 16-character random string (https://docs.python.org/3/library/secrets.html) to keep the files separate
         file_id = secrets.token_hex(16)
         file_name = file_id + ".jpg"
 
+        #We connect to our storage bucket on GCloud and store all the images there with the random string name
         client = storage.Client.from_service_account_json("apad-storage.json", project="APAD-Vaccination")
 
         # client = storage.Client()
@@ -189,11 +199,13 @@ def create_theme():
 
 @app.route('/themes/all', methods=['GET'])
 def view_themes():
+    #The function to view all themes
     source_header = request.headers.get('source')
     db = setup_mongodb_session()
     collections = db.list_collection_names()
     data = db.themes.find()
     if source_header:
+        #We store all themes data inside a list to be sent to our mobile app through a JSON dump
         themes_list = []
         theme_name = []
         theme_description = []
@@ -353,6 +365,7 @@ def create_review_from_android():
         review_rating = request.form['star']
         review_tags = request.form['th_tags']
         
+        #Getting the current lat and lng coordinates from the mobile app
         g = []
         lat = float(request.form['th_lat'])
         lng = float(request.form['th_lng'])
@@ -375,10 +388,12 @@ def create_review_from_android():
                         
 @app.route('/reviews/all', methods=['GET', 'POST'])
 def view_reviews():
+    #The main feed where we show all posts under the user's selected themes
     db = setup_mongodb_session()
     claims = is_user_authenticated()
     if claims is not False:
         if request.method == 'POST':
+            #POST method takes us to the search page where we can see reviews filtered by search tags.
             tag_name = request.form["search"]
             all_reviews = []
             curr_user = db.users.find({"user_token": claims["user_id"]})
@@ -386,6 +401,7 @@ def view_reviews():
             for tag in tag_name.split(','):
                 rgx = re.compile('.*'+tag+'.*', re.IGNORECASE)  # compile the regex
 
+            #We make a search request by using the input from user and searching it within post tags
             search_request = {
                 '$and': [
                     {'tags': {'$regex': rgx}},
@@ -397,6 +413,7 @@ def view_reviews():
                     all_reviews.append(review)
             return render_template("feed_reviews_tags.html", reviews=all_reviews)
         else:
+            #Main feed
             current_user = db.users.find({"user_token": claims['user_id']})
             all_reviews = []
             temp = True
@@ -414,6 +431,7 @@ def view_reviews():
 
 @app.route('/geoview', methods=['GET'])
 def get_geoview_page():
+    #Checks current user's subscribed themes, fetches all reviews from those themes and generates the maps page using Google Maps API
     db = setup_mongodb_session()
     claims = is_user_authenticated()
     if claims is not False:
