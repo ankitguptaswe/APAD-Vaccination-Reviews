@@ -1,4 +1,6 @@
-#!/home/apad_vaccination_reviews/APAD-Vaccination-Reviews/env/bin/python3
+#!/bin/sh
+'''exec' "/home/asadaali96/APAD-Vaccination-Reviews (Phase 2)/env/bin/python3" "$0" "$@"
+' '''
 # -*- coding: utf-8 -*-
 import re
 import sys

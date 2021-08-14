@@ -1,0 +1,112 @@
+/*
+
+Official SNAPSHOT color scheme:
+
+067BC2 - star command blue
+262626 - eerie black
+fffcf9 - baby powder
+b1ede8 - celeste
+db2763 - cerise
+
+*/
+
+body {
+  margin: 0;
+  font-family: sans-serif;
+  background-color: #fffcf9;
+  font-size: 15px;
+}
+
+.topnav {
+  overflow: hidden;
+  background-color: #b1ede8;
+
+}
+
+.topnav a {
+  display: block;
+  color: black;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 14px;
+  background color: #236078;
+}
+
+.topnav a:hover {
+  color: #fffcf9;
+}
+
+.topnav td:hover {
+  background-color: #db2763;
+  color: #fffcf9;
+}
+
+.topnav td.active {
+  background-color: #067BC2;
+  color: #fffcf9;
+  font-weight: 900;
+  width: 150px;
+}
+
+.topnav td.not_active {
+  font-weight: 900;
+  width: 150px;
+}
+
+.topnav td.not-active-no-hover {
+  background-color: #b1ede8;
+  color: #fffcf9;
+  width: 150px;
+}
+
+.topnav .search-container {
+  background color: #abdbe3;
+}
+
+.topnav input[type=text] {
+  padding: 6px;
+  float: middle;
+  margin-top: 15px;
+  font-size: 16px;
+  background color: #abdbe3;
+
+}
+
+.topnav .search-container button {
+  padding: 15px 15px;
+  margin-top: 2px;
+  margin-right: 16px;
+  background: #ddd;
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.topnav .search-container button:hover {
+  background: #262626;
+}
+
+@media screen and (max-width: 600px) {
+  .topnav .search-container {
+    float: none;
+  }
+  .topnav a, .topnav input[type=text], .topnav .search-container button {
+    width: 60%;
+    margin: 0;
+    padding: 14px;
+  }
+  .topnav input[type=text] {
+    border: 2px solid #ccc;
+  }
+}
+
+.topnav_footer {
+  overflow: hidden;
+  background-color: #abdfff;
+  font-size: 13px;
+  padding: 8px 16px;
+}
+
+h2{
+    font-size: 150%;
+}

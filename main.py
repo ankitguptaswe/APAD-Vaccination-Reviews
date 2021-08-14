@@ -1,33 +1,14 @@
-## Web-app tree
-# | /
-# | /login                       ## TODO
-# | /
-# | /preferences
-# | /preferences/set
-# | /
-# | /themes/all
-# | /themes/create
-# | /themes/<theme_name>
-# | /
-# | /reviews/<theme_name>       ## TODO
-# | /reviews/create
-# | /reviews/feed               ## TODO
-# |
-
-# Libraries and modules
-import datetime
-import sqlite3
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, request
 from google.auth.transport import requests
 from google.cloud import datastore
 import google.oauth2.id_token
 import random, secrets
 import pymongo
 import urllib.parse
-from werkzeug.utils import secure_filename
-import os
-from PIL import Image
+import re
+import json
 import base64
+import os
 
 # Bucket Google Cloud Storage
 from io import BytesIO
@@ -88,7 +69,6 @@ def is_user_authenticated():
             # verification checks fail.
             error_message = str(exc)
             token_expired = 1
-
     if not token_expired and id_token:
         return claims
     else:
@@ -96,23 +76,17 @@ def is_user_authenticated():
 
 def update_user_theme(user_email, themes):
     db = setup_mongodb_session()
-
     data = db.users.find({"email": user_email})
-
     query = { "email": user_email }
     new_preferences = { "$set": { "themes": themes } }
-
     db.users.update_one(query, new_preferences)
-
     data = db.users.find({"email": user_email})
 
 @app.route('/')
 def root():
     db = setup_mongodb_session()
     claims = is_user_authenticated()
-
     if claims is not False:
-
         user_id = claims['user_id']
         user_email = claims['email']
         db = setup_mongodb_session()
@@ -130,7 +104,7 @@ def root():
         data = [cur for cur in curr]
         return render_template('index.html', user_data=claims, error_message=None, user=data[0])
     else:
-        return render_template('index.html')
+        return render_template('index.html', error_message=True)
 
 @app.route('/preferences/set', methods=['GET', 'POST'])
 def preferences_set():
@@ -138,7 +112,7 @@ def preferences_set():
     claims = is_user_authenticated()
     if claims is not False:
         current_user = db.users.find({"user_token": claims['user_id']})
-    
+
         collections = db.list_collection_names()
         data = db.themes.find()
 
@@ -186,12 +160,9 @@ def create_theme():
         theme_description = request.form['th_description']
         theme_photo = request.files.get('photo', False)
 
-        #'_id': ObjectId('6102cf1af9a93c37284f6f5c'), 'theme_name': 'vaccine', 'picture': b'NA', 'description': 'take it and enjoy'}
         db = setup_mongodb_session()
 
         collections = db.list_collection_names()
-
-        # db.themes.drop()
 
         data = db.themes.find()
 
@@ -201,16 +172,10 @@ def create_theme():
         client = storage.Client.from_service_account_json("apad-storage.json", project="APAD-Vaccination")
 
         # client = storage.Client()
-        bucket = client.get_bucket('apad-storage')
+        bucket = client.get_bucket('apad-group8-bucket')
         filename = "img/themes/" + file_name
         blob = bucket.blob(filename)
         blob.upload_from_file(theme_photo.stream, content_type=theme_photo.content_type)
-
-        # blob.make_public()
-        # url = blob.public_url
-
-        # if theme_photo.filename != '':
-        #     theme_photo.save("static/img/themes/" + file_name)
 
         new_theme = {'_id': file_id,
                     'theme_name': theme_name,
@@ -218,19 +183,31 @@ def create_theme():
                     'description': theme_description}
 
         db.themes.insert_one(new_theme)
+        return view_themes()
 
     return render_template("themes_create.html")
 
 @app.route('/themes/all', methods=['GET'])
 def view_themes():
-    if request.method == 'GET':
-        #'_id': ObjectId('6102cf1af9a93c37284f6f5c'), 'theme_name': 'vaccine', 'picture': b'NA', 'description': 'take it and enjoy'}
-        db = setup_mongodb_session()
-
-        collections = db.list_collection_names()
-        data = db.themes.find()
-
-    return render_template("themes_all.html", themes_data=data)
+    source_header = request.headers.get('source')
+    db = setup_mongodb_session()
+    collections = db.list_collection_names()
+    data = db.themes.find()
+    if source_header:
+        themes_list = []
+        theme_name = []
+        theme_description = []
+        theme_picture = []
+        for theme in data:
+            theme_name.append(theme["theme_name"])
+            theme_description.append(theme["description"])
+            theme_picture.append(theme["picture"])
+        themes_list.append(theme_name)
+        themes_list.append(theme_description)
+        themes_list.append(theme_picture)
+        return json.dumps(themes_list)
+    else:
+        return render_template("themes_all.html", themes_data=data)
 
 @app.route('/themes/<string:theme_name>', methods=['GET'])
 def view_theme(theme_name):
@@ -238,8 +215,8 @@ def view_theme(theme_name):
     This function/service is used to get a single theme from the db and all associated reviews
     :return: string containing the theme
     """
+    source_header = request.headers.get('source')
     db = setup_mongodb_session()
-
     all_reviews = []
 
     data = db.themes.find({"theme_name": theme_name})
@@ -248,9 +225,10 @@ def view_theme(theme_name):
     for i in data1:
         all_reviews.append(i)
 
-
-    return render_template("theme.html", details=data[0], details1=all_reviews)
-
+    if source_header:
+        return json.dumps(all_reviews,default=str)
+    else:
+        return render_template("theme.html", details=data[0], details1=all_reviews)
 
 @app.route('/reviews/create', methods=['GET', 'POST'])
 def create_review():
@@ -283,7 +261,7 @@ def create_review():
             client = storage.Client.from_service_account_json("apad-storage.json", project="APAD-Vaccination")
 
             # client = storage.Client()
-            bucket = client.get_bucket('apad-storage')
+            bucket = client.get_bucket('apad-group8-bucket')
             filename = "img/reviews/" + file_name
             blob = bucket.blob(filename)
             blob.upload_from_file(review_photo.stream, content_type=review_photo.content_type)
@@ -296,6 +274,20 @@ def create_review():
             review_description = request.form['th_review']
             review_rating = request.form['star']
             review_tags = request.form['th_tags']
+
+            #hardcoding min and max lat, lng for Austin area
+            min_lat = 30.0
+            max_lat = 31.0
+            min_lng = -97.0
+            max_lng = -98.0
+
+            #selecting lat and lng randomly from the min/max defined above
+            lat = random.uniform(min_lat, max_lat)
+            lng = random.uniform(min_lng, max_lng)
+            g = []
+            g.append (lat)
+            g.append (lng)
+            
             db.reviews.insert({
                 "user_token": review_user_id,
                 "title": review_title,
@@ -303,21 +295,107 @@ def create_review():
                 "rating": review_rating,
                 "picture": file_name,
                 "description": review_description,
-                "tags": review_tags
+                "tags": review_tags,
+                "geo_location": g
             })
-            return view_reviews()
+
+            return redirect(url_for("view_reviews"))
         else:
             return render_template('review_create.html', themes=themes)
     else:
         return root()
 
+@app.route('/reviews/create/android', methods=['GET', 'POST'])
+def create_review_from_android():
+    """
+    This function/service is used to post review of a theme item by a user
+    :param user_id: unique user id who is posting the review
+    :return: None
+    """
+    db = setup_mongodb_session()
+    collections = db.list_collection_names()
+    data = db.themes.find()
+
+    themes = []
+
+    for theme in data:
+        themes.append(theme['theme_name'])
+
+    if request.method == 'POST':
+        db = setup_mongodb_session()
+        review_theme = request.form["th_preferences"]
+        review_photo = request.form["th_photo"]
+
+        ## Convert photo encoded back to streamed Image
+        review_photo = base64.b64decode((review_photo))
+        file_id = secrets.token_hex(16)+'.jpg'
+        file_name = '/tmp/'+file_id
+        decodeit = open(file_name, 'wb')
+        decodeit.write(review_photo)
+        decodeit.close
+
+        client = storage.Client.from_service_account_json("apad-storage.json", project="APAD-Vaccination")
+
+        # client = storage.Client()
+        bucket = client.get_bucket('apad-group8-bucket')
+        filename = "img/reviews/" + file_id
+        blob = bucket.blob(filename)
+        with open(file_name, 'rb') as f:
+            blob.upload_from_file(f)
+        os.remove(file_name)
+
+        review_user_id = request.form["user_id"]
+
+        # blob.make_public()
+        # url = blob.public_url
+        review_title = request.form['th_title']
+        review_description = request.form['th_review']
+        review_rating = request.form['star']
+        review_tags = request.form['th_tags']
+        
+        g = []
+        lat = float(request.form['th_lat'])
+        lng = float(request.form['th_lng'])
+        g.append(lat)
+        g.append(lng)
+
+        db.reviews.insert({
+            "user_token": review_user_id,
+            "title": review_title,
+            "theme": review_theme,
+            "rating": review_rating,
+            "description": review_description,
+            "picture": file_id,
+            "tags": review_tags,
+            "geo_location": g
+        })
+        return "Posted in MongoDB !!!"
+    else:
+        return "Not a post"
+                        
 @app.route('/reviews/all', methods=['GET', 'POST'])
 def view_reviews():
     db = setup_mongodb_session()
     claims = is_user_authenticated()
     if claims is not False:
         if request.method == 'POST':
-            return view_reviews_by_tags(request.form["search"])
+            tag_name = request.form["search"]
+            all_reviews = []
+            curr_user = db.users.find({"user_token": claims["user_id"]})
+            sub_themes = curr_user[0]["themes"]
+            for tag in tag_name.split(','):
+                rgx = re.compile('.*'+tag+'.*', re.IGNORECASE)  # compile the regex
+
+            search_request = {
+                '$and': [
+                    {'tags': {'$regex': rgx}},
+                    {'theme': {'$in' : sub_themes}}
+                ]
+            }
+            for review in db.reviews.find(search_request):
+                if review not in all_reviews:
+                    all_reviews.append(review)
+            return render_template("feed_reviews_tags.html", reviews=all_reviews)
         else:
             current_user = db.users.find({"user_token": claims['user_id']})
             all_reviews = []
@@ -334,28 +412,23 @@ def view_reviews():
     else:
         return root()
 
-@app.route('/reviews/tags/<string:tag_name>', methods=['GET'])
-def view_reviews_by_tags(tag_name):
-    import re
+@app.route('/geoview', methods=['GET'])
+def get_geoview_page():
     db = setup_mongodb_session()
     claims = is_user_authenticated()
     if claims is not False:
+        current_user = db.users.find({"user_token": claims['user_id']})
         all_reviews = []
-        curr_user = db.users.find({"user_token": claims["user_id"]})
-        sub_themes = curr_user[0]["themes"]
-        for tag in tag_name.split(','):
-            rgx = re.compile('.*'+tag+'.*', re.IGNORECASE)  # compile the regex
-    
-        search_request = {
-            '$and': [
-                {'tags': {'$regex': rgx}},
-                {'theme': {'$in' : sub_themes}}
-            ]
-        }
-        for review in db.reviews.find(search_request):
-            if review not in all_reviews:
+        temp = True
+
+        if current_user[0]["themes"] == []:
+            temp = False
+
+        for theme in current_user[0]["themes"]:
+            for review in db.reviews.find({"theme": theme}):
                 all_reviews.append(review)
-        return render_template("feed_reviews_tags.html", reviews=all_reviews)
+
+        return render_template("geo_view.html", reviews=all_reviews, temp=temp)
     else:
         return root()
 

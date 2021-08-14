@@ -1,27 +1,13 @@
-<!doctype html>
-<!--
- Copyright 2021 Google LLC
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
-      http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
--->
-
-<html>
-<head>
-  <title>Datastore and Firebase Auth Example</title>
+<html><title>Welcome to Snapshot!</title>
+<head><link rel="icon" href="../static/logo-icon.png">
+    <link href="/static/alternatesearchstyle.css" rel="stylesheet" type="text/css"/>
   <script src="{{ url_for('static', filename='script.js') }}"></script>
   <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <script src="https://www.gstatic.com/firebasejs/ui/4.4.0/firebase-ui-auth.js"></script>
   <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/4.4.0/firebase-ui-auth.css" />
+  {% if not user_data %}
+    <p align="center" style="color:black;"><strong> APAD Reviews Project - Group 8</p>
+    {% endif %}
 </head>
 <body>
     <script src="https://www.gstatic.com/firebasejs/8.8.0/firebase-app.js"></script>
@@ -43,28 +29,37 @@
     firebase.analytics();
     </script>
 
-    <h1>Datastore and Firebase Auth Example</h1>
-
     <div id="firebaseui-auth-container"></div>
-
-    <button id="sign-out" hidden=true>Sign Out</button>
-
     <div id="login-info" hidden=true>
-    <h2>Login info:</h2>
     {% if user_data %}
-        <dl>
-        <dt><b>User ID</b></dt><dd>{{ user.user_token }}</dd>
-        <dt><b>User Email</b></dt><dd>{{ user.email }}</dd>
-        <dt><b>Your prefered themes are: </b></dt><dd>{{ user.themes }}</dd>
-        </dl>
-        <br><br><br><br>
-        <h1><a href="../preferences/set">Setup preferences</a></h1>
-        <h1><a href="../themes/all">See all themes</a></h1>
-        <h1><a href="../themes/create">Create a theme</a></h1>
-    {% elif error_message %}
-        <p>Error: {{ error_message }}</p>
-    {% endif %}
+    <div class="topnav">
+      <table border = 0 width=100%>
+        <tr><td class="active">
+      <a href="{{ url_for('root') }}"><img src="../static/logo-light.png" width="130" height="40"></a></td><td class="not_active">
+      <a href="{{ url_for('preferences_show') }}">USER PREFERENCES</a></td><td class="not_active">
+      <a href="{{ url_for('preferences_set') }}">CHOOSE PREFERENCES</a></td><td class="not_active">
+      <a href="{{ url_for('view_reviews') }}">FEED</a></td><td class="not_active">
+      <a href="{{ url_for('create_theme') }}">NEW THEME</a></td><td class="not_active">
+      <a href="{{ url_for('view_themes') }}">VIEW ALL THEMES</a></td><td class="not_active">
+      <a href="{{ url_for('create_review') }}">WRITE A REVIEW</a></td><td class="not_active">
+      <a href="{{ url_for('get_geoview_page') }}">MAPS</a></td class="not_active">
+    </tr>
+    </table>
     </div>
-
+    <div class="topnav_footer"><i>Welcome to <b>Snapshot</b>, the place to review local places and stuff</i></div>
+    <div style="text-align: left; padding-left: 50px; padding-top: 15px;">
+        <h2>User Information</h2>
+        <b>User Email</b><br>{{ user.email }}<br>
+        <br><b>Your prefered themes are: </b>
+        <br>
+        {% for theme in user.themes%}
+        <p><a>{{ theme }}</a></p>
+        {% endfor %}
+        <br><br>
+    {% elif error_message %}
+        <p>{{ error_message }}</p>
+    {% endif %}
+    <button style="height:40px;width:100px" id="sign-out" hidden=true><h3>Sign Out</h3></button>
+</div>
 </body>
 </html>

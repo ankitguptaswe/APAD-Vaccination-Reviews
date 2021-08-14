@@ -1,47 +1,40 @@
 <html>
+<title>Your preferences</title>
+<link rel="icon" href="../static/logo-icon.png">
 <head>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<link href="alternatesearchstyle.css" rel="stylesheet" type="text/css"/>
-    <style>
-* {box-sizing: border-box;}
-    </style>
+  <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<link href="/static/alternatesearchstyle.css" rel="stylesheet" type="text/css"/>
 </head>
-<body>
-
-<div class="topnav">
-  <a class="active" href="#home">Home</a>
-  <a href="#Feed">Feed</a>
-  <a href="#Create Theme">Theme</a>
-  <a href="#See All Themes">See All Themes</a>
-  <a href="#Themes">Theme</a>
-  <a href="#Preferences">Preferences</a>
-  <a href="#Set Preferences">Set Preferences</a>
-  <div class="search-container">
-    <form action="/action_page.php">
-      <input type="text" placeholder="Search.." name="search">
-      <button type="submit"><i class="fa fa-search"></i></button>
-    </form>
-  </div>
-</div>
-
-
-
-<div class = "preferences">
+    <body>
+      <div class="topnav">
+        <table border = 0 width=100%>
+          <tr><td class="not_active">
+        <a href="{{ url_for('root') }}"><img src="../static/logo-dark.png" width="130" height="40"></a></td><td class="active">
+        <a href="{{ url_for('preferences_show') }}">USER PREFERENCES</a></td><td class="not_active">
+        <a href="{{ url_for('preferences_set') }}">CHOOSE PREFERENCES</a></td><td class="not_active">
+        <a href="{{ url_for('view_reviews') }}">FEED</a></td><td class="not_active">
+        <a href="{{ url_for('create_theme') }}">NEW THEME</a></td><td class="not_active">
+        <a href="{{ url_for('view_themes') }}">VIEW ALL THEMES</a></td><td class="not_active">
+        <a href="{{ url_for('create_review') }}">WRITE A REVIEW</a></td><td class="not_active">
+        <a href="{{ url_for('get_geoview_page') }}">MAPS</a></td class="not_active">
+      </td>
+      </tr>
+      </table>
+      </div>
+<div class="topnav_footer"><i>This is your <b>preferencese</b> page where you can consult all data we store about you</i></div>
+<div style="text-align: left; padding-left: 50px; padding-top: 15px;">
   <h1>User preferences</h1>
-  <b>User email: </b>  {{details['email']}}
-    <br>
-  <b>User themes: </b>  {{details['themes']}}
-    <br>
+    <dt><b>Your prefered themes are: </b></dt> <br>
+    {% for theme in details['themes']%}
+    <a>{{ theme }}</a><br>
+    </dl>
+        {% endfor %}
 
   {% if details['themes'] %}
   <h2>You have set themes preferences, you are good</h2>
   {% else %}
   <h2>You don't have any preferences set</h2>
   {% endif  %}
-  <br><br>
-  <a href="{{ url_for('view_reviews') }}">Go to your Home Feed</a><br>
-  <a href="{{ url_for('preferences_set') }}">Setup new preferences</a><br>
-  <a href="{{ url_for('create_theme') }}">Create new theme</a>
 
 </div>
 

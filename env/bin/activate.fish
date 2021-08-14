@@ -29,7 +29,7 @@ end
 # unset irrelevant variables
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV "/home/apad_vaccination_reviews/APAD-Vaccination-Reviews/env"
+set -gx VIRTUAL_ENV "/home/asadaali96/APAD-Vaccination-Reviews (Phase 2)/env"
 
 set -gx _OLD_VIRTUAL_PATH $PATH
 set -gx PATH "$VIRTUAL_ENV/bin" $PATH
