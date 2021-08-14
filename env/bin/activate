@@ -37,7 +37,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="/home/apad_vaccination_reviews/APAD-Vaccination-Reviews/env"
+VIRTUAL_ENV="/home/asadaali96/APAD-Vaccination-Reviews (Phase 2)/env"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
