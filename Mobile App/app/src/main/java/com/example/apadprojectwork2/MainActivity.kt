@@ -157,8 +157,6 @@ val locationListener: LocationListener = object : LocationListener {
     override fun onLocationChanged(location: Location) {
         location_user_lat = location.latitude.toString()
         location_user_lng = location.longitude.toString()
-        Log.d("Lati", location_user_lat.toString())
-        Log.d("Long", location_user_lng.toString())
     }
     override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}
     override fun onProviderEnabled(provider: String) {}

@@ -124,14 +124,24 @@ class FirstFragment : Fragment() {
                 var th_lng = location_user_lng.toString()
                 var user_id = "android_user"
 
+                if (location_user_lat.isNullOrEmpty() || location_user_lng.isNullOrEmpty()) {
+                    throw NullPointerException()
+                }
                 if (var_title_text.isNullOrEmpty() || var_rating_text.isNullOrEmpty() || var_theme_text.isNullOrEmpty()) {
                     throw IOException("Please fill all details")
                 }
-
                 //anyFunction(view)
                 otherFunction(view, var_theme_text, var_title_text, var_description_text, var_rating_text, var_tags_text, encodedImage, th_lat, th_lng, user_id)
                 onReviewCreateClick()
-            } catch (e : Exception){
+                Toast.makeText(getActivity()?.applicationContext, "Review succesfully posted", Toast.LENGTH_SHORT).show()
+            } catch (e : NullPointerException) {
+                Toast.makeText(
+                    getActivity()?.applicationContext,
+                    "Please provide location permission to the application",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            catch (e : Exception){
                 Toast.makeText(getActivity()?.applicationContext, "Please fill all details", Toast.LENGTH_SHORT).show()
             }
         }

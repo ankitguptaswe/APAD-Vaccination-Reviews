@@ -26,19 +26,16 @@ class ReviewActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        val intent = getIntent()
-        val theme = intent.getStringExtra("Theme")
-        println(theme)
         setContentView(R.layout.activity_review)
         recyclerView_main.layoutManager = LinearLayoutManager(this)
         fetchReviews()
     }
 
     fun fetchReviews() {
-        val theme = "Vaccines"
+        val intent = getIntent()
+        theme_Name.text = intent.getStringExtra("Theme")
         val queue = Volley.newRequestQueue(this)
-        val url = "https://apad-vaccine-reviews.uc.r.appspot.com/themes/".plus(theme)
-        theme_Name.text = theme
+        val url = "https://apad-vaccine-reviews.uc.r.appspot.com/themes/".plus(theme_Name.text)
         val stringRequest = object: StringRequest(
             Method.GET, url,
             Response.Listener { response ->

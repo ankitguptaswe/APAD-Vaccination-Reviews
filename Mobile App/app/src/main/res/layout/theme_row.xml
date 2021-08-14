@@ -23,7 +23,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="10dp"
-        app:layout_constraintDimensionRatio="8:3"
+        app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -77,12 +77,4 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView_review_description" />
 
-    <TextView
-        android:id="@+id/index"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="TextView"
-        android:textSize="0sp"
-        tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="19dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>

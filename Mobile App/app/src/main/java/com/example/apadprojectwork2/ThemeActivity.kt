@@ -26,7 +26,6 @@ class ThemeActivity() : AppCompatActivity() {
     }
 
     fun onSeeReviewClick(view: View) {
-        println (index.text)
         val intent = Intent(this@ThemeActivity, ReviewActivity::class.java)
         intent.putExtra("Theme", textView_review_title.text)
         startActivity(intent)
