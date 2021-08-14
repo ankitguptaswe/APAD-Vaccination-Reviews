@@ -10,6 +10,7 @@ import json
 import base64
 import os
 
+
 # Bucket Google Cloud Storage
 from io import BytesIO
 from google.cloud import storage
@@ -220,6 +221,7 @@ def view_themes():
         return json.dumps(themes_list)
     else:
         return render_template("themes_all.html", themes_data=data)
+
 
 @app.route('/themes/<string:theme_name>', methods=['GET'])
 def view_theme(theme_name):
