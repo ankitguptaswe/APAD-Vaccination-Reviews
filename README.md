@@ -10,5 +10,6 @@ As part of phase2 and phase3 we have added the following features:
   4. When you hover over the pin, it shows you the review photo EXTRA FEATURE: the hover box will show the review title as well
 
 **Mobile App:**
-  1. User Sign Up feature
-  2. Error messages when Review details are not complete
+  1. Mobile app with User Sign-in, View Themes categorized by posts, and Create Posts (with picture and geo location) functionality
+  2. User Sign Up feature
+  3. Error messages when Review details are not complete
